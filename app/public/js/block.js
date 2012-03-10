@@ -7,39 +7,39 @@ var templates = [
 
     'x',
     'x',
-    'x',
+    'o',    // pivot point
     'x'
 
   ],[
 
-    'xx',
+    'xx',   // no pivot point == no pivoting
     'xx'
 
   ],[
 
     ' x',
-    ' x',
+    ' o',
     'xx'
 
   ],[
 
     'x ',
-    'x ',
+    'o ',
     'xx'
 
   ],[
 
-    'xx ',
+    'xo ',
     ' xx'
 
   ],[
 
-    ' xx',
+    ' ox',
     'xx '
 
   ],[
 
-    'xxx',
+    'xox',
     ' x '
 
   ]
@@ -58,7 +58,7 @@ function load_templates(templates) {
     var last = type;
     for (var i = 0; i < 4; i++) {
       rotations.push(last);
-      var rotated = utils.rotate_array(last, false);
+      var rotated = utils.rotate_array(last, true);
       last = rotated;
     }
     return rotations;
@@ -69,7 +69,7 @@ function load_templates(templates) {
 
 var block_types = load_templates(templates);
 
-for (var i = 0; i < 4; i++) {
+for (var i = 0; i < 7; i++) {
   console.log('');
   console.log(i + ':');
   for (var r = 0; r < 4; r++) {
