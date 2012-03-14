@@ -1013,5 +1013,8 @@ button.active:hover,
   background: #818;
 }
 #board .block.on.orange {
-  background: #861;
+  background: #f28d28;
+}
+#board .block.on.yellow {
+  background: #f1f218;
 }

@@ -1,4 +1,4 @@
-var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black'];
+var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black', 'yellow'];
 
 
 /**
@@ -9,7 +9,7 @@ function Block(options) {
   options = options || {};
 
   this.on = ko.observable(false);
-  this.color = ko.observable(available_colors[Math.floor(Math.random() * available_colors.length)]);
+  this.color = ko.observable('black');
 
 }
 
@@ -73,7 +73,7 @@ Board.prototype = {
     this.render(this.player().board.block);
   },
   rotate: function() {
-    this.player().rotate_right();
+    this.player().rotate_left();
     this.render(this.player().board.block);
   },
   render: function(block) {
@@ -89,6 +89,7 @@ Board.prototype = {
       for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
           on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
+          rows[y][x].color(available_colors[block.type_index]);
           rows[y][x].on(on);
         }
       }
