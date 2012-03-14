@@ -73,7 +73,7 @@ Board.prototype = {
     this.render(this.player().board.block);
   },
   rotate: function() {
-    this.player().rotate_right();
+    this.player().rotate_left();
     this.render(this.player().board.block);
   },
   render: function(block) {
