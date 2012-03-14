@@ -345,13 +345,13 @@ require.define("/tetris_game.js", function (require, module, exports, __dirname,
 var utils = require('./utils');
 var Player = require('./player');
 
-module.exports = Tetris;
-
 function Tetris() {
   this.players = [new Player({
     name: 'Test player'
   })];
 }
+
+module.exports = Tetris;
 
 Tetris.prototype = {
   start: function() {
