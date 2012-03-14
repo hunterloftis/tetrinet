@@ -341,36 +341,6 @@ exports.extname = function(path) {
 
 });
 
-require.define("/tetris_game.js", function (require, module, exports, __dirname, __filename) {
-var utils = require('./utils');
-var Player = require('./player');
-
-function Tetris() {
-  this.players = [new Player({
-    name: 'Test player'
-  })];
-}
-
-module.exports = Tetris;
-
-Tetris.prototype = {
-  start: function() {
-    console.log("Game started");
-
-/*
-    this.players[0].board.add_block(3, 1, 10);
-    var grid = utils.clone_array(this.players[0].board.rows);
-    var block = this.players[0].board.block;
-    if (block) {
-      utils.overlay_array(grid, block.get_rows(), block.y, block.x);
-    }
-    utils.render_array(grid);
-*/
-  }
-
-};
-});
-
 require.define("/utils.js", function (require, module, exports, __dirname, __filename) {
 function multi_array(dimensions, default_val) {
   var arr = [], i;
@@ -1636,11 +1606,33 @@ Block.prototype = {
 };
 });
 
-require.define("/index.js", function (require, module, exports, __dirname, __filename) {
-    var TetrisGame = require('./tetris_game');
+require.define("/tetris_game.js", function (require, module, exports, __dirname, __filename) {
+    var utils = require('./utils');
+var Player = require('./player');
 
-var game = new TetrisGame();
+function Tetris() {
+  this.players = [new Player({
+    name: 'Test player'
+  })];
+}
 
-game.start();
+module.exports = Tetris;
+
+Tetris.prototype = {
+  start: function() {
+    console.log("Game started");
+
+/*
+    this.players[0].board.add_block(3, 1, 10);
+    var grid = utils.clone_array(this.players[0].board.rows);
+    var block = this.players[0].board.block;
+    if (block) {
+      utils.overlay_array(grid, block.get_rows(), block.y, block.x);
+    }
+    utils.render_array(grid);
+*/
+  }
+
+};
 });
-require("/index.js");
+require("/tetris_game.js");

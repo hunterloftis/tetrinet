@@ -1,5 +1,14 @@
 
+var TetrisGame = require('./tetris_game');
+var asdf = require('./player');
+
+var game = new TetrisGame();
+console.log("players: ", game.players);
+
+
 var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black'];
+
+
 
 /**
  * individual blocks in grid
