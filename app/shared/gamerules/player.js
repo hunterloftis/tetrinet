@@ -22,18 +22,16 @@ Player.prototype = {
     this.board.block = new_block;
   },
   drop_block: function() {
-    if (this.board.block) {
-      this.board.block.y++;
-    }
+    return this.shift(1, 0);
   },
-  shift_right: function() {
+  shift: function(dy, dx) {
     if (this.board.block) {
-      this.board.block.x++;
-    }
-  },
-  shift_left: function() {
-    if (this.board.block) {
-      this.board.block.x--;
+      if (this.board.block.fits(this.board.rows, this.board.block.y + dy, this.board.block.x + dx)) {
+        this.board.block.x += dx;
+        this.board.block.y += dy;
+        return true;
+      }
+      else return false;
     }
   },
   rotate_left: function() {

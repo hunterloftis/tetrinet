@@ -113,5 +113,26 @@ Block.prototype = {
       }
     });
     return rotates;
+  },
+  fits: function(board, target_y, target_x) {
+    var rows = this.get_rows();
+    var dimensions = utils.get_dimensions(rows);
+    var bounds = utils.get_dimensions(board);
+
+    // Are we still on the board?
+    if (target_y < 0 || target_x < 0) return false;
+    if (target_y + dimensions.height > bounds.height || target_x + dimensions.width > bounds.width) return false;
+
+    // Are we free of overlap with existing tiles?
+    for (var y = 0; y < dimensions.height; y++) {
+      for (var x = 0; x < dimensions.width; x++) {
+        var board_tile = (board[y + target_y][x + target_x] === ' ' || board[y + target_y][x + target_x] === '.') ? false : true;
+        var this_tile = (rows[y][x] === ' ' || rows[y][x] === '.') ? false : true;
+        if (board_tile && this_tile) return false;
+      }
+    }
+
+    // ...yep.
+    return true;
   }
 };

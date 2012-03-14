@@ -425,6 +425,13 @@ function find_coords(array, target) {
   return undefined;
 }
 
+function get_dimensions(array) {
+  return {
+    height: array.length,
+    width: array[0].length
+  };
+}
+
 module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
