@@ -1,4 +1,5 @@
 var TetrisGame = require('./tetris_game');
+var utils = require('./utils');
 
 var game = new TetrisGame();
 
@@ -15,7 +16,7 @@ game.players[0].add_block(6, 0, 7);
 game.test_render();
 
 // Drop it a level
-console.log("Drop it a level:", game.players[0].drop_block());
+console.log("Drop it a level:", game.players[0].shift_down());
 game.test_render();
 
 // Shift it right a bunch
@@ -66,3 +67,14 @@ game.test_render();
 // Rotate left
 console.log("Rotate left:", game.players[0].rotate_left());
 game.test_render();
+
+// Drop it all the way to the bottom
+for (var i = 0; i < 21; i++) {
+  console.log("Drop:", game.players[0].shift_down());
+  game.test_render();
+}
+
+// Check to see if the block was applied to the grid
+console.log("Final board:");
+console.log("Block:", game.players[0].board.block);
+utils.render_array(game.players[0].board.rows);
