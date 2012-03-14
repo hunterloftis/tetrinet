@@ -17,7 +17,45 @@ append scripts
 
     $(function(){
       ko.applyBindings(BoardVM);
+
+      var lastkeypress = 0;
+      var ts = new Date().getTime();
+      var timesince = ts - lastkeypress;
+      var should_trigger = (timesince > 50);
+
+      console.log("key pressed", timesince)
+
+      $("body").keydown(function(e) {
+        if(should_trigger) {
+          console.log(e.keyCode);
+
+          switch(e.keyCode) {
+            // space
+            case 32:
+              BoardVM.start();
+              break;
+            // left
+            case 37:
+              BoardVM.left();
+              break;
+            //right
+            case 39:
+              BoardVM.right();
+              break;
+            // down
+            case 40:
+              BoardVM.down();
+              break;
+            // up
+            case 38:
+              break;
+          }
+
+        }
+        lastkeypress = ts;
+      });
     })
+
 
     function randomBlock() {
       var rows = BoardVM.rows();
