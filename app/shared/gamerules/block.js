@@ -71,6 +71,7 @@ var block_types = load_templates(templates);
 module.exports = Block;
 
 function Block(type_index, options) {
+  this.type_index = type_index;
   this.type = block_types[type_index];
   this.rotation = 0;
   this.x = 0;
