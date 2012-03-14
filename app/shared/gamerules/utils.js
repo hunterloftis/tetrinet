@@ -51,9 +51,7 @@ function render_array(rows) {
   }
 }
 
-var exporter = (typeof module != 'undefined') ? module.exports : window ;
-
-exporter = {
+module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
   rotate_array: rotate_array,
