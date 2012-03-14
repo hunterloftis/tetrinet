@@ -376,7 +376,7 @@ function multi_array(dimensions, default_val) {
   var arr = [], i;
   if (dimensions.length === 1) {       // Sentinel - stop when we're at the innermost array
     for (i = 0; i < dimensions[0]; i++) {
-      arr[i] = default_val;
+      arr[i] = (typeof default_val == "function") ? default_val() : default_val ;
     }
   }
   else {
@@ -471,6 +471,7 @@ require.define("/player.js", function (require, module, exports, __dirname, __fi
 var _ = require('underscore')._;
 
 var Board = require('./board');
+var Block = require('./block');
 
 module.exports = Player;
 
@@ -1670,12 +1671,12 @@ Block.prototype = {
       var rows = this.get_rows();
       var old_axis = rows.axis;
       if (counter) {
-        this.block.rotation--;
-        if (this.block.rotation < 0) this.block.rotation = 3;
+        this.rotation--;
+        if (this.rotation < 0) this.rotation = 3;
       }
       else {
-        this.block.rotation++;
-        if (this.block.rotation > 3) this.block.rotation = 0;
+        this.rotation++;
+        if (this.rotation > 3) this.rotation = 0;
       }
       rows = this.get_rows();
       var new_axis = rows.axis;
@@ -1705,9 +1706,13 @@ require.define("/index.js", function (require, module, exports, __dirname, __fil
 var game = new TetrisGame();
 
 game.start();
-game.players[0].add_block(3, 1, 7);
+game.players[0].add_block(0, 1, 7);
 game.test_render();
 game.players[0].drop_block();
+game.test_render();
+game.players[0].shift_right();
+game.test_render();
+game.players[0].shift_right();
 game.test_render();
 game.players[0].shift_right();
 game.test_render();

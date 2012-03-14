@@ -357,6 +357,27 @@ require.define("/utils.js", function (require, module, exports, __dirname, __fil
   return arr;
 }
 
+function clone_array(array) {
+  var clone = [];
+  for (var y = 0; y < array.length; y++) {
+    clone[y] = [];
+    for (var x = 0; x < array[y].length; x++) {
+      clone[y][x] = array[y][x];
+    }
+  }
+  return clone;
+}
+
+function overlay_array(dest, src, off_y, off_x) {
+  var height = src.length;
+  var width = src[0].length;
+  for (var y = 0; y < height; y++) {
+    for (var x = 0; x < width; x++) {
+      dest[y + off_y][x + off_x] = src[y][x];
+    }
+  }
+}
+
 function multi_array_from_strings(string_array) {
   var rows = [];
   for (var y = 0; y < string_array.length; y++) {
@@ -395,11 +416,23 @@ function render_array(rows) {
   }
 }
 
+function find_coords(array, target) {
+  for (var y = 0; y < array.length; y++) {
+    for (var x = 0; x < array[y].length; x++) {
+      if (array[y][x] === target) return {x: x, y: y};
+    }
+  }
+  return undefined;
+}
+
 module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
   rotate_array: rotate_array,
-  render_array: render_array
+  render_array: render_array,
+  clone_array: clone_array,
+  overlay_array: overlay_array,
+  find_coords: find_coords
 };
 
 });
