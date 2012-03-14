@@ -1,8 +1,13 @@
+var _ = require('underscore')._;
+
 var Board = require('./board');
 
-module.exports = function Player() {
+module.exports = Player;
+
+function Player(options) {
+  _.extend(this, options);
   this.board = new Board();
-};
+}
 
 Player.prototype = {
   create_game: function(user_id) {
