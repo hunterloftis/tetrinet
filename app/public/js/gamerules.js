@@ -1448,7 +1448,7 @@ function multi_array(dimensions, default_val) {
   var arr = [], i;
   if (dimensions.length === 1) {       // Sentinel - stop when we're at the innermost array
     for (i = 0; i < dimensions[0]; i++) {
-      arr[i] = default_val;
+      arr[i] = (typeof default_val == "function") ? default_val() : default_val ;
     }
   }
   else {

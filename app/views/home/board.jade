@@ -12,34 +12,33 @@ append scripts
   script
     var BoardVM = new Board();
 
-    var current_block;
-
     $(function(){
       ko.applyBindings(BoardVM);
 
       randomBlock();
     })
 
+
+
     function randomBlock() {
       var rows = BoardVM.rows();
-      var random_row = Math.floor(Math.random()*(BoardVM.height()+1));
-      var random_col = Math.floor(Math.random()*(BoardVM.width()+1));
+      var random_row = Math.floor(Math.random()*(BoardVM.height()));
+      var random_col = Math.floor(Math.random()*(BoardVM.width()));
       var block = rows[random_row][random_col];
       var status = block.on();
 
-      console.log(block);
-      current_block = block;
-      
-      //rows[random_row][random_col].on(!rows[random_row][random_col].on());
 
-      //setTimeout(function(){
-      //  randomBlock();
-      //}, 1000)
+      block.on(!status);
+
+      setTimeout(function(){
+        randomBlock();
+      }, 1)
     }
 
 
 block content
   #board(data-bind="foreach:rows")
     // ko foreach:$data
-    .block(data-bind="css:{on:on}")
+    .block(data-bind="css:{on:on, red:(color() == 'red'), blue:(color() == 'blue'), green:(color() == 'green'), purple:(color() == 'purple'), orange:(color() == 'orange')}")
     // /ko
+
