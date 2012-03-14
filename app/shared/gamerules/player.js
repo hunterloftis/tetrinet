@@ -28,7 +28,7 @@ Player.prototype = {
     }
     else {
       this.board.apply_block();
-      //this.board.check_rows();
+      this.board.check_rows();
       return false;
     }
   },

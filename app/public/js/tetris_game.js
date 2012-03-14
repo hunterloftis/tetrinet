@@ -476,7 +476,7 @@ Player.prototype = {
     }
     else {
       this.board.apply_block();
-      //this.board.check_rows();
+      this.board.check_rows();
       return false;
     }
   },
@@ -1570,9 +1570,9 @@ Board.prototype = {
     }
     while(unfilled.length < this.rows.length) {
       var new_row = utils.multi_array([this.width], ' ');
-      unfilled.unshift(); // TODO
+      unfilled.unshift(new_row);
     }
-
+    this.rows = unfilled;
   },
   is_dead: function() {
     // Check if we've reached the top
@@ -1719,8 +1719,16 @@ Block.prototype = {
         this.restore_snapshot(snapshot);
         return false;
       }
-      // Rotation worked
-      return true;
+
+      // Check against other block bounds
+      if (this.fits(board, this.y, this.x)) {
+        return true;
+      }
+      else {
+        // Restore original position and bail
+        this.restore_snapshot(snapshot);
+        return false;
+      }
     }
     else return false;
   },

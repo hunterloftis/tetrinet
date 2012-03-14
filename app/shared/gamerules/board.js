@@ -39,9 +39,9 @@ Board.prototype = {
     }
     while(unfilled.length < this.rows.length) {
       var new_row = utils.multi_array([this.width], ' ');
-      unfilled.unshift(); // TODO
+      unfilled.unshift(new_row);
     }
-
+    this.rows = unfilled;
   },
   is_dead: function() {
     // Check if we've reached the top

@@ -136,8 +136,16 @@ Block.prototype = {
         this.restore_snapshot(snapshot);
         return false;
       }
-      // Rotation worked
-      return true;
+
+      // Check against other block bounds
+      if (this.fits(board, this.y, this.x)) {
+        return true;
+      }
+      else {
+        // Restore original position and bail
+        this.restore_snapshot(snapshot);
+        return false;
+      }
     }
     else return false;
   },
