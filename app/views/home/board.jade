@@ -1,0 +1,45 @@
+extends ../layouts/layout
+
+append styles
+  link(rel='stylesheet', href='/styles/board.css' )
+
+append scripts
+  script(src="/js/lib/jquery-1.7.1.min.js")
+  script(src="/js/lib/underscore.js")
+  script(src="/js/lib/knockout-2.0.0.js")
+  script(src="/js/utils.js")
+  script(src="/js/boardVM.js")
+  script
+    var BoardVM = new Board();
+
+    var current_block;
+
+    $(function(){
+      ko.applyBindings(BoardVM);
+
+      randomBlock();
+    })
+
+    function randomBlock() {
+      var rows = BoardVM.rows();
+      var random_row = Math.floor(Math.random()*(BoardVM.height()+1));
+      var random_col = Math.floor(Math.random()*(BoardVM.width()+1));
+      var block = rows[random_row][random_col];
+      var status = block.on();
+
+      console.log(block);
+      current_block = block;
+      
+      //rows[random_row][random_col].on(!rows[random_row][random_col].on());
+
+      //setTimeout(function(){
+      //  randomBlock();
+      //}, 1000)
+    }
+
+
+block content
+  #board(data-bind="foreach:rows")
+    // ko foreach:$data
+    .block(data-bind="css:{on:on}")
+    // /ko
