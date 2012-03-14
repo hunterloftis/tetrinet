@@ -416,13 +416,23 @@ function render_array(rows) {
   }
 }
 
+function find_coords(array, target) {
+  for (var y = 0; y < array.length; y++) {
+    for (var x = 0; x < array[y].length; x++) {
+      if (array[y][x] === target) return {x: x, y: y};
+    }
+  }
+  return undefined;
+}
+
 module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
   rotate_array: rotate_array,
   render_array: render_array,
   clone_array: clone_array,
-  overlay_array: overlay_array
+  overlay_array: overlay_array,
+  find_coords: find_coords
 };
 
 });
@@ -431,6 +441,7 @@ require.define("/player.js", function (require, module, exports, __dirname, __fi
 var _ = require('underscore')._;
 
 var Board = require('./board');
+var Block = require('./block');
 
 module.exports = Player;
 
@@ -440,6 +451,37 @@ function Player(options) {
 }
 
 Player.prototype = {
+  add_block: function(type, row, column) {
+    if (this.board.block) {
+      throw new Error("A block already exists on this board");
+    }
+    var new_block = new Block(type, {
+      y: row,
+      x: column
+    });
+    this.board.block = new_block;
+  },
+  drop_block: function() {
+    if (this.board.block) {
+      this.board.block.y++;
+    }
+  },
+  shift_right: function() {
+    if (this.board.block) {
+      this.board.block.x++;
+    }
+  },
+  shift_left: function() {
+    if (this.board.block) {
+      this.board.block.x--;
+    }
+  },
+  rotate_left: function() {
+    if (this.board.block) this.board.block.rotate(true);
+  },
+  rotate_right: function() {
+    if (this.board.block) this.board.block.rotate(false);
+  },
   create_game: function(user_id) {
     // End any games the user is currently running
     // Does the user have permission to create a game?
@@ -1502,16 +1544,6 @@ Board.prototype = {
   empty: function() {
     this.rows = utils.multi_array([this.height, this.width], '.');
   },
-  add_block: function(type, row, column) {
-    if (this.block) {
-      throw new Error("A block already exists on this board");
-    }
-    var new_block = new Block(type, {
-      y: row,
-      x: column
-    });
-    this.block = new_block;
-  },
   is_dead: function() {
     // Check if we've reached the top
   }
@@ -1533,7 +1565,7 @@ var templates = [
 
   ],[
 
-    'xx',   // no pivot point == no pivoting
+    'zx',   // no pivot point == no pivoting, z = this is the reference point`
     'xx'
 
   ],[
@@ -1597,11 +1629,43 @@ function Block(type_index, options) {
   this.x = 0;
   this.y = 0;
   _.extend(this, options);
+  this.rotates = this.find_rotation_points();
 }
 
 Block.prototype = {
   get_rows: function() {
     return this.type[this.rotation];
+  },
+  rotate: function(counter) {
+    if (this.rotates) {
+      var rows = this.get_rows();
+      var old_axis = rows.axis;
+      if (counter) {
+        this.rotation--;
+        if (this.rotation < 0) this.rotation = 3;
+      }
+      else {
+        this.rotation++;
+        if (this.rotation > 3) this.rotation = 0;
+      }
+      rows = this.get_rows();
+      var new_axis = rows.axis;
+      var off_x = old_axis.x - new_axis.x;
+      var off_y = old_axis.y - new_axis.y;
+      this.x += off_x;
+      this.y += off_y;
+    }
+  },
+  find_rotation_points: function() {
+    var rotates = false;
+    _(this.type).each(function(grid) {
+      var axis = utils.find_coords(grid, 'o');
+      if (axis) {
+        grid.axis = axis;
+        rotates = true;
+      }
+    });
+    return rotates;
   }
 };
 });
@@ -1622,17 +1686,17 @@ Tetris.prototype = {
   start: function() {
     console.log("Game started");
 
-/*
-    this.players[0].board.add_block(3, 1, 10);
+    
+  },
+  test_render: function() {
     var grid = utils.clone_array(this.players[0].board.rows);
     var block = this.players[0].board.block;
     if (block) {
       utils.overlay_array(grid, block.get_rows(), block.y, block.x);
     }
     utils.render_array(grid);
-*/
+    console.log('---');
   }
-
 };
 });
 require("/tetris_game.js");

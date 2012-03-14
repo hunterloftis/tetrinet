@@ -72,11 +72,21 @@ function render_array(rows) {
   }
 }
 
+function find_coords(array, target) {
+  for (var y = 0; y < array.length; y++) {
+    for (var x = 0; x < array[y].length; x++) {
+      if (array[y][x] === target) return {x: x, y: y};
+    }
+  }
+  return undefined;
+}
+
 module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
   rotate_array: rotate_array,
   render_array: render_array,
   clone_array: clone_array,
-  overlay_array: overlay_array
+  overlay_array: overlay_array,
+  find_coords: find_coords
 };
