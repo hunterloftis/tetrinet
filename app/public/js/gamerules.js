@@ -455,6 +455,13 @@ function find_coords(array, target) {
   return undefined;
 }
 
+function get_dimensions(array) {
+  return {
+    height: array.length,
+    width: array[0].length
+  };
+}
+
 module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
@@ -498,12 +505,20 @@ Player.prototype = {
   },
   shift_right: function() {
     if (this.board.block) {
-      this.board.block.x++;
+      if (this.board.block.fits(this.board, this.board.block.y, this.board.block.x + 1)) {
+        this.board.block.x++;
+        return true;
+      }
+      else return false;
     }
   },
   shift_left: function() {
     if (this.board.block) {
-      this.board.block.x--;
+      if (this.board.block.fits(this.board, this.board.block.y, this.board.block.x - 1)) {
+        this.board.block.x--;
+        return true;
+      }
+      else return false;
     }
   },
   rotate_left: function() {
@@ -1696,6 +1711,18 @@ Block.prototype = {
       }
     });
     return rotates;
+  },
+  fits: function(board, target_y, target_x) {
+    var rows = this.get_rows();
+    var dimensions = utils.get_dimensions(rows);
+    for (var y = 0; y < dimensions.height; y++) {
+      for (var x = 0; x < dimensions.width; x++) {
+        var board_tile = (board[y + target_y][x + target_x] === ' ' || board[y + target_y][x + target_x] === '.') ? false : true;
+        var this_tile = (rows[y][x] === ' ' || rows[y][x] === '.') ? false : true;
+        if (board_tile && this_tile) return false;
+      }
+    }
+    return true;
   }
 };
 });
@@ -1706,16 +1733,29 @@ require.define("/index.js", function (require, module, exports, __dirname, __fil
 var game = new TetrisGame();
 
 game.start();
+
+// Create test right column
+for (var y = 0; y < 22; y++) {
+  game.players[0].board.rows[y][11] = 'X';
+}
+
+// Add our block
 game.players[0].add_block(0, 1, 7);
 game.test_render();
+
+// Drop it a level
 game.players[0].drop_block();
 game.test_render();
+
+// Shift it right a bunch
 game.players[0].shift_right();
 game.test_render();
 game.players[0].shift_right();
 game.test_render();
-game.players[0].shift_right();
+game.players[0].shift_right();  // Shouldn't work
 game.test_render();
+
+// Rotate left
 game.players[0].rotate_left();
 game.test_render();
 

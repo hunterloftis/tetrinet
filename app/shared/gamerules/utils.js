@@ -81,6 +81,13 @@ function find_coords(array, target) {
   return undefined;
 }
 
+function get_dimensions(array) {
+  return {
+    height: array.length,
+    width: array[0].length
+  };
+}
+
 module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
@@ -88,5 +95,6 @@ module.exports = {
   render_array: render_array,
   clone_array: clone_array,
   overlay_array: overlay_array,
-  find_coords: find_coords
+  find_coords: find_coords,
+  get_dimensions: get_dimensions
 };

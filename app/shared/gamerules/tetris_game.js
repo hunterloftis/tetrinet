@@ -22,6 +22,6 @@ Tetris.prototype = {
       utils.overlay_array(grid, block.get_rows(), block.y, block.x);
     }
     utils.render_array(grid);
-    console.log('---');
+    console.log('');
   }
 };
