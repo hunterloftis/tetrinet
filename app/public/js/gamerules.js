@@ -488,14 +488,15 @@ function Player(options) {
 
 Player.prototype = {
   add_block: function(type, row, column) {
-    if (this.board.block) {
-      throw new Error("A block already exists on this board");
+    if (typeof(this.board.block) === 'undefined') {
+      var new_block = new Block(type, {
+        y: row,
+        x: column
+      });
+      this.board.block = new_block;
+      return true;
     }
-    var new_block = new Block(type, {
-      y: row,
-      x: column
-    });
-    this.board.block = new_block;
+    return false;
   },
   shift_down: function() {
     if (this.shift(1,0)) {
