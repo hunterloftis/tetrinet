@@ -6,6 +6,7 @@ var Block = require('./block');
 module.exports = Player;
 
 function Player(options) {
+  this.id = 'someuuid';
   _.extend(this, options);
   this.board = new Board();
 }
@@ -28,7 +29,9 @@ Player.prototype = {
     }
     else {
       this.board.apply_block();
-      this.board.check_rows();
+      if (this.board.check_rows()) {
+        radio('player.update').broadcast(this);
+      }
       return false;
     }
   },

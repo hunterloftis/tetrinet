@@ -32,7 +32,7 @@ Block.prototype = {
  * entire playing board grid
  */ 
 function Board(options) {
-
+  var self = this;
   options = options || {};
 
   var multi_array = require('./utils').multi_array;
@@ -43,6 +43,9 @@ function Board(options) {
   this.rows = ko.observableArray(multi_array([this.height(), this.width()], function() {
     return new Block();
   }));
+
+  // Events
+  radio('player.update').subscribe([this.render, this]);
 
 }
 
@@ -77,26 +80,28 @@ Board.prototype = {
     this.render(this.player().board.block);
   },
   render: function(block) {
-    if (block) {
-      var block_rows = block.get_rows();
-      var board_rows = this.player().board.rows;
-      var rows = this.rows();
-      var on, line;
+    var block_rows;
+    var board_rows = this.player().board.rows;
+    var rows = this.rows();
+    var on, line;
+    var width = this.width(), height = this.height();
+    var x, y;
 
-      var width = this.width(), height = this.height();
-
-      // Render the board
-      for (var y = 0; y < height; y++) {
-        for (var x = 0; x < width; x++) {
-          on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
-          rows[y][x].color(available_colors[block.type_index]);
-          rows[y][x].on(on);
-        }
+    // Render the board
+    for (y = 0; y < height; y++) {
+      for (x = 0; x < width; x++) {
+        on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
+        rows[y][x].color(available_colors[block.type_index]);
+        rows[y][x].on(on);
       }
+    }
+    
+    if (block) {
+      block_rows = block.get_rows();
 
       // Render the block
-      for (var y = 0; y < block_rows.length; y++) {
-        for (var x = 0; x < block_rows[y].length; x++) {
+      for (y = 0; y < block_rows.length; y++) {
+        for (x = 0; x < block_rows[y].length; x++) {
           on = (block_rows[y][x] !== ' ');
           if (on) rows[block.y + y][block.x + x].on(true);
         }

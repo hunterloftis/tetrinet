@@ -16,7 +16,8 @@
         "express-resource": "latest",
         "express-messages": "git://github.com/hunterloftis/express-messages.git",
         "redis": "latest",
-        "underscore":"latest"
+        "underscore":"latest",
+        "radio":"latest"
     },
     "devDependencies": {
         "vows": "latest",
