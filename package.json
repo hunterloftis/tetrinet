@@ -19,7 +19,8 @@
         "underscore":"latest"
     },
     "devDependencies": {
-        "vows": "latest"
+        "vows": "latest",
+        "browserify":"latest"
     },
     "scripts": {
         "lock": "scripts/module_lock.js",
