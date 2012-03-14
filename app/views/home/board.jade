@@ -103,10 +103,6 @@ append scripts
 
 
 block content
-  button.button(data-bind="click:start") START
-  button.button(data-bind="click:down") DOWN
-  button.button(data-bind="click:left") LEFT
-  button.button(data-bind="click:right") RIGHT
   #board(data-bind="foreach:rows")
     // ko foreach:$data
     .block(data-bind="css:{on:on, red:(color() == 'red'), blue:(color() == 'blue'), green:(color() == 'green'), purple:(color() == 'purple'), orange:(color() == 'orange')}")
