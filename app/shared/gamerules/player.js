@@ -34,11 +34,17 @@ Player.prototype = {
       else return false;
     }
   },
+  shift_left: function() {
+    return this.shift(0, -1);
+  },
+  shift_right: function() {
+    return this.shift(0, 1);
+  },
   rotate_left: function() {
-    if (this.board.block) this.board.block.rotate(true);
+    if (this.board.block) return this.board.block.rotate(this.board.rows, true);
   },
   rotate_right: function() {
-    if (this.board.block) this.board.block.rotate(false);
+    if (this.board.block) return this.board.block.rotate(this.board.rows, false);
   },
   create_game: function(user_id) {
     // End any games the user is currently running

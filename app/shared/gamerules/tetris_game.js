@@ -12,8 +12,6 @@ module.exports = Tetris;
 Tetris.prototype = {
   start: function() {
     console.log("Game started");
-
-    
   },
   test_render: function() {
     var grid = utils.clone_array(this.players[0].board.rows);
