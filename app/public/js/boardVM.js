@@ -73,26 +73,28 @@ Board.prototype = {
     this.render(this.player().board.block);
   },
   render: function(block) {
-    var block_rows = block.get_rows();
-    var board_rows = this.player().board.rows;
-    var rows = this.rows();
-    var on, line;
+    if (block) {
+      var block_rows = block.get_rows();
+      var board_rows = this.player().board.rows;
+      var rows = this.rows();
+      var on, line;
 
-    var width = this.width(), height = this.height();
+      var width = this.width(), height = this.height();
 
-    // Render the board
-    for (var y = 0; y < height; y++) {
-      for (var x = 0; x < width; x++) {
-        on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
-        rows[y][x].on(on);
+      // Render the board
+      for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+          on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
+          rows[y][x].on(on);
+        }
       }
-    }
 
-    // Render the block
-    for (var y = 0; y < block_rows.length; y++) {
-      for (var x = 0; x < block_rows[y].length; x++) {
-        on = (block_rows[y][x] !== ' ');
-        if (on) rows[block.y + y][block.x + x].on(true);
+      // Render the block
+      for (var y = 0; y < block_rows.length; y++) {
+        for (var x = 0; x < block_rows[y].length; x++) {
+          on = (block_rows[y][x] !== ' ');
+          if (on) rows[block.y + y][block.x + x].on(true);
+        }
       }
     }
   }
