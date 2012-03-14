@@ -396,12 +396,12 @@ function clone_array(array) {
   return clone;
 }
 
-function overlay_array(dest, src, off_y, off_x) {
+function overlay_array(dest, src, off_y, off_x, mask) {
   var height = src.length;
   var width = src[0].length;
   for (var y = 0; y < height; y++) {
     for (var x = 0; x < width; x++) {
-      dest[y + off_y][x + off_x] = src[y][x];
+      if (src[y][x] !== mask) dest[y + off_y][x + off_x] = src[y][x];
     }
   }
 }
@@ -1574,7 +1574,7 @@ Board.prototype = {
   },
   apply_block: function() {
     if (this.block) {
-      utils.overlay_array(this.rows, this.block.get_rows(), this.block.y, this.block.x);
+      utils.overlay_array(this.rows, this.block.get_rows(), this.block.y, this.block.x, ' ');
       this.block = undefined;
     }
   },
