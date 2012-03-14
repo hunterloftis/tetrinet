@@ -55,9 +55,9 @@ Board.prototype = {
       }
     }
   },
-  start: function() {
+  start: function(type) {
     this.clear_board();
-    this.player().add_block(6,0,7);
+    this.player().add_block(type,0,7);
     this.render(this.player().board.block);
   },
   down: function() {
