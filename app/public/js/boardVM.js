@@ -59,16 +59,20 @@ Board.prototype = {
     this.player().add_block(6,0,7);
     this.render(this.player().board.block);
   }, 
-  drop: function() {
+  down: function() {
     this.clear_board();
-    this.player().drop_block();
+    this.player().shift_down();
     this.render(this.player().board.block);
   },
   left: function() {
-
+    this.clear_board();
+    this.player().shift_left();
+    this.render(this.player().board.block);
   },
   right: function() {
-
+    this.clear_board();
+    this.player().shift_right();
+    this.render(this.player().board.block);
   },
   render: function(block) {
     this.rows()[block.y][block.x].on(true);

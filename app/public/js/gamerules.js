@@ -356,8 +356,6 @@ module.exports = Tetris;
 Tetris.prototype = {
   start: function() {
     console.log("Game started");
-
-    
   },
   test_render: function() {
     var grid = utils.clone_array(this.players[0].board.rows);
@@ -499,8 +497,14 @@ Player.prototype = {
     });
     this.board.block = new_block;
   },
-  drop_block: function() {
-    return this.shift(1, 0);
+  shift_down: function() {
+    if (this.shift(1,0)) {
+      return true;
+    }
+    else {
+      this.board.apply_block();
+      return false;
+    }
   },
   shift: function(dy, dx) {
     if (this.board.block) {
@@ -512,11 +516,17 @@ Player.prototype = {
       else return false;
     }
   },
+  shift_left: function() {
+    return this.shift(0, -1);
+  },
+  shift_right: function() {
+    return this.shift(0, 1);
+  },
   rotate_left: function() {
-    if (this.board.block) this.board.block.rotate(true);
+    if (this.board.block) return this.board.block.rotate(this.board.rows, true);
   },
   rotate_right: function() {
-    if (this.board.block) this.board.block.rotate(false);
+    if (this.board.block) return this.board.block.rotate(this.board.rows, false);
   },
   create_game: function(user_id) {
     // End any games the user is currently running
@@ -533,24 +543,6 @@ Player.prototype = {
   use_special: function(user_id, player_id) {
     // Find the next special in the user's queueu
     // Is player_id in the same game?
-  },
-  clockwise: function(user_id) {
-
-  },
-  counter_clockwise: function(user_id) {
-
-  },
-  left: function(user_id) {
-
-  },
-  right: function(user_id) {
-
-  },
-  down: function(user_id) {
-
-  },
-  drop: function(user_id) {
-
   }
 };
 });
@@ -1580,6 +1572,12 @@ Board.prototype = {
   empty: function() {
     this.rows = utils.multi_array([this.height, this.width], '.');
   },
+  apply_block: function() {
+    if (this.block) {
+      utils.overlay_array(this.rows, this.block.get_rows(), this.block.y, this.block.x);
+      this.block = undefined;
+    }
+  },
   is_dead: function() {
     // Check if we've reached the top
   }
@@ -1672,10 +1670,17 @@ Block.prototype = {
   get_rows: function() {
     return this.type[this.rotation];
   },
-  rotate: function(counter) {
+  rotate: function(board, counter) {
     if (this.rotates) {
-      var rows = this.get_rows();
-      var old_axis = rows.axis;
+
+      var rows, old_axis, snapshot, new_axis, off_x, off_y, dimensions, bounds;
+
+      // Save our position and rotation
+      snapshot = this.take_snapshot();
+
+      // Perform the rotation
+      rows = this.get_rows();
+      old_axis = rows.axis;
       if (counter) {
         this.rotation--;
         if (this.rotation < 0) this.rotation = 3;
@@ -1685,12 +1690,54 @@ Block.prototype = {
         if (this.rotation > 3) this.rotation = 0;
       }
       rows = this.get_rows();
-      var new_axis = rows.axis;
-      var off_x = old_axis.x - new_axis.x;
-      var off_y = old_axis.y - new_axis.y;
+      new_axis = rows.axis;
+      off_x = old_axis.x - new_axis.x;
+      off_y = old_axis.y - new_axis.y;
       this.x += off_x;
       this.y += off_y;
+
+      // Check against left/right bounds
+      rows = this.get_rows();
+      dimensions = utils.get_dimensions(rows);
+      bounds = utils.get_dimensions(board);
+      if (this.x + dimensions.width > bounds.width) {
+        if (this.fits(board, this.y, bounds.width - dimensions.width)) {
+          this.x = bounds.width - dimensions.width;
+          // Rotation worked after displacement from the right bound
+          return true;
+        }
+        else {
+          // Reset original position and bail
+          this.restore_snapshot(snapshot);
+          return false;
+        }
+      }
+      else if (this.x < 0) {
+        if (this.fits(board, this.y, 0)) {
+          this.x = 0;
+          // Rotation worked after displacement from the left bound
+          return true;
+        }
+        // Reset original position and bail
+        this.restore_snapshot(snapshot);
+        return false;
+      }
+      // Rotation worked
+      return true;
     }
+    else return false;
+  },
+  take_snapshot: function() {
+    return {
+      rotation: this.rotation,
+      x: this.x,
+      y: this.y
+    };
+  },
+  restore_snapshot: function(snapshot) {
+    this.rotation = snapshot.rotation;
+    this.x = snapshot.x;
+    this.y = snapshot.y;
   },
   find_rotation_points: function() {
     var rotates = false;
@@ -1729,6 +1776,7 @@ Block.prototype = {
 
 require.define("/index.js", function (require, module, exports, __dirname, __filename) {
     var TetrisGame = require('./tetris_game');
+var utils = require('./utils');
 
 var game = new TetrisGame();
 
@@ -1736,7 +1784,7 @@ game.start();
 
 // Create test right column
 for (var y = 0; y < 22; y++) {
-  game.players[0].board.rows[y][11] = 'X';
+  game.players[0].board.rows[y][11] = 'B';
 }
 
 // Add our block
@@ -1745,29 +1793,67 @@ game.players[0].add_block(6, 0, 7);
 game.test_render();
 
 // Drop it a level
-console.log("Drop it a level:");
-game.players[0].drop_block();
+console.log("Drop it a level:", game.players[0].shift_down());
 game.test_render();
 
 // Shift it right a bunch
 for (var i = 0; i < 2; i++) {
-  var shifted = game.players[0].shift(0, 1);
-  if (!shifted) console.log("Couldn't shift right:");
-  else console.log("Shift right:");
+  console.log("Shift right:", game.players[0].shift_right());
   game.test_render();
 }
 
 // Rotate left
-console.log("Rotate left:");
-game.players[0].rotate_left();
+console.log("Rotate left:", game.players[0].rotate_left());
 game.test_render();
 
 // Shift it left a bunch
 for (var i = 0; i < 10; i++) {
-  var shifted = game.players[0].shift(0, -1);
-  if (!shifted) console.log("Couldn't shift left:");
-  else console.log("Shift left:");
+  console.log("Shift left:", game.players[0].shift_left());
   game.test_render();
 }
+
+// Rotate right
+console.log("Rotate right:", game.players[0].rotate_right());
+game.test_render();
+
+console.log("Rotate right:", game.players[0].rotate_right());
+game.test_render();
+
+console.log("Rotate right:", game.players[0].rotate_right());
+game.test_render();
+
+console.log("Rotate right:", game.players[0].rotate_right());
+game.test_render();
+
+// Shift left
+console.log("Shift left:", game.players[0].shift_left());
+game.test_render();
+
+// Add a tile to prevent rotation
+game.players[0].board.rows[1][2] = 'B';
+game.test_render();
+
+// Rotate left
+console.log("Rotate left:", game.players[0].rotate_left());
+game.test_render();
+
+// Clear fake block
+game.players[0].board.rows[1][2] = ' ';
+game.test_render();
+
+// Rotate left
+console.log("Rotate left:", game.players[0].rotate_left());
+game.test_render();
+
+// Drop it all the way to the bottom
+for (var i = 0; i < 21; i++) {
+  console.log("Drop:", game.players[0].shift_down());
+  game.test_render();
+}
+
+// Check to see if the block was applied to the grid
+console.log("Final board:");
+console.log("Block:", game.players[0].board.block);
+utils.render_array(game.players[0].board.rows);
 });
 require("/index.js");

@@ -469,8 +469,14 @@ Player.prototype = {
     });
     this.board.block = new_block;
   },
-  drop_block: function() {
-    return this.shift(1, 0);
+  shift_down: function() {
+    if (this.shift(1,0)) {
+      return true;
+    }
+    else {
+      this.board.apply_block();
+      return false;
+    }
   },
   shift: function(dy, dx) {
     if (this.board.block) {
@@ -482,11 +488,17 @@ Player.prototype = {
       else return false;
     }
   },
+  shift_left: function() {
+    return this.shift(0, -1);
+  },
+  shift_right: function() {
+    return this.shift(0, 1);
+  },
   rotate_left: function() {
-    if (this.board.block) this.board.block.rotate(true);
+    if (this.board.block) return this.board.block.rotate(this.board.rows, true);
   },
   rotate_right: function() {
-    if (this.board.block) this.board.block.rotate(false);
+    if (this.board.block) return this.board.block.rotate(this.board.rows, false);
   },
   create_game: function(user_id) {
     // End any games the user is currently running
@@ -503,24 +515,6 @@ Player.prototype = {
   use_special: function(user_id, player_id) {
     // Find the next special in the user's queueu
     // Is player_id in the same game?
-  },
-  clockwise: function(user_id) {
-
-  },
-  counter_clockwise: function(user_id) {
-
-  },
-  left: function(user_id) {
-
-  },
-  right: function(user_id) {
-
-  },
-  down: function(user_id) {
-
-  },
-  drop: function(user_id) {
-
   }
 };
 });
@@ -1550,6 +1544,12 @@ Board.prototype = {
   empty: function() {
     this.rows = utils.multi_array([this.height, this.width], '.');
   },
+  apply_block: function() {
+    if (this.block) {
+      utils.overlay_array(this.rows, this.block.get_rows(), this.block.y, this.block.x);
+      this.block = undefined;
+    }
+  },
   is_dead: function() {
     // Check if we've reached the top
   }
@@ -1642,10 +1642,17 @@ Block.prototype = {
   get_rows: function() {
     return this.type[this.rotation];
   },
-  rotate: function(counter) {
+  rotate: function(board, counter) {
     if (this.rotates) {
-      var rows = this.get_rows();
-      var old_axis = rows.axis;
+
+      var rows, old_axis, snapshot, new_axis, off_x, off_y, dimensions, bounds;
+
+      // Save our position and rotation
+      snapshot = this.take_snapshot();
+
+      // Perform the rotation
+      rows = this.get_rows();
+      old_axis = rows.axis;
       if (counter) {
         this.rotation--;
         if (this.rotation < 0) this.rotation = 3;
@@ -1655,12 +1662,54 @@ Block.prototype = {
         if (this.rotation > 3) this.rotation = 0;
       }
       rows = this.get_rows();
-      var new_axis = rows.axis;
-      var off_x = old_axis.x - new_axis.x;
-      var off_y = old_axis.y - new_axis.y;
+      new_axis = rows.axis;
+      off_x = old_axis.x - new_axis.x;
+      off_y = old_axis.y - new_axis.y;
       this.x += off_x;
       this.y += off_y;
+
+      // Check against left/right bounds
+      rows = this.get_rows();
+      dimensions = utils.get_dimensions(rows);
+      bounds = utils.get_dimensions(board);
+      if (this.x + dimensions.width > bounds.width) {
+        if (this.fits(board, this.y, bounds.width - dimensions.width)) {
+          this.x = bounds.width - dimensions.width;
+          // Rotation worked after displacement from the right bound
+          return true;
+        }
+        else {
+          // Reset original position and bail
+          this.restore_snapshot(snapshot);
+          return false;
+        }
+      }
+      else if (this.x < 0) {
+        if (this.fits(board, this.y, 0)) {
+          this.x = 0;
+          // Rotation worked after displacement from the left bound
+          return true;
+        }
+        // Reset original position and bail
+        this.restore_snapshot(snapshot);
+        return false;
+      }
+      // Rotation worked
+      return true;
     }
+    else return false;
+  },
+  take_snapshot: function() {
+    return {
+      rotation: this.rotation,
+      x: this.x,
+      y: this.y
+    };
+  },
+  restore_snapshot: function(snapshot) {
+    this.rotation = snapshot.rotation;
+    this.x = snapshot.x;
+    this.y = snapshot.y;
   },
   find_rotation_points: function() {
     var rotates = false;
@@ -1712,8 +1761,6 @@ module.exports = Tetris;
 Tetris.prototype = {
   start: function() {
     console.log("Game started");
-
-    
   },
   test_render: function() {
     var grid = utils.clone_array(this.players[0].board.rows);
