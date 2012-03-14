@@ -5,16 +5,32 @@
 #board
   width 387px
   height 707px
-  background rgba(255,255,255,0.7)
+  background rgba(255,255,255,0.6)
   border 1px solid #444
-  box-shadow 0 0 5px #333
+  box-shadow 0 0 25px -10px #000
   border-radius 3px
   margin 30px auto
 
   .block
+    -webkit-transform-style preserve-3d
     width 30px
     height 30px
     margin 1px
     float left
+    border-radius 3px
     &.on
       background #111
+      animation pop 250ms ease-out
+      bevel(3px)
+      emboss(3px)
+      box-shadow 0 0 20px -5px #000
+      &.red
+        background #811
+      &.green
+        background #181
+      &.blue
+        background #118
+      &.purple
+        background #818
+      &.orange
+        background #861

@@ -2,4 +2,5 @@
 
 echo "Building shared JS..."
 node_modules/browserify/bin/cli.js app/shared/gamerules/index.js -o app/public/js/gamerules.js
+node_modules/browserify/bin/cli.js app/shared/gamerules/utils.js -o app/public/js/utils.js
 echo "built."

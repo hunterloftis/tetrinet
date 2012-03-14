@@ -938,13 +938,13 @@ button.active:hover,
 #board {
   width: 387px;
   height: 707px;
-  background: rgba(255,255,255,0.70);
+  background: rgba(255,255,255,0.60);
   border: 1px solid #444;
-  -webkit-box-shadow: 0 0 5px #333;
-  -moz-box-shadow: 0 0 5px #333;
-  -ms-box-shadow: 0 0 5px #333;
-  -o-box-shadow: 0 0 5px #333;
-  box-shadow: 0 0 5px #333;
+  -webkit-box-shadow: 0 0 25px -10px #000;
+  -moz-box-shadow: 0 0 25px -10px #000;
+  -ms-box-shadow: 0 0 25px -10px #000;
+  -o-box-shadow: 0 0 25px -10px #000;
+  box-shadow: 0 0 25px -10px #000;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -953,11 +953,75 @@ button.active:hover,
   margin: 30px auto;
 }
 #board .block {
+  -webkit-transform-style: preserve-3d;
   width: 30px;
   height: 30px;
   margin: 1px;
   float: left;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
 }
 #board .block.on {
   background: #111;
+  -webkit-animation: pop 250ms ease-out;
+  -moz-animation: pop 250ms ease-out;
+  -ms-animation: pop 250ms ease-out;
+  -o-animation: pop 250ms ease-out;
+  animation: pop 250ms ease-out;
+  border: 1px solid #333;
+  border: 1px solid #111;
+  position: relative;
+  -webkit-box-shadow: 0 0 20px -5px #000;
+  -moz-box-shadow: 0 0 20px -5px #000;
+  -ms-box-shadow: 0 0 20px -5px #000;
+  -o-box-shadow: 0 0 20px -5px #000;
+  box-shadow: 0 0 20px -5px #000;
+}
+#board .block.on:after {
+  pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  border-bottom: 1px solid #555;
+}
+#board .block.on:after {
+  pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  border-top: 1px solid #999;
+}
+#board .block.on.red {
+  background: #811;
+}
+#board .block.on.green {
+  background: #181;
+}
+#board .block.on.blue {
+  background: #118;
+}
+#board .block.on.purple {
+  background: #818;
+}
+#board .block.on.orange {
+  background: #861;
 }
