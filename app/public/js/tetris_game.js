@@ -341,36 +341,6 @@ exports.extname = function(path) {
 
 });
 
-require.define("/tetris_game.js", function (require, module, exports, __dirname, __filename) {
-var utils = require('./utils');
-var Player = require('./player');
-
-function Tetris() {
-  this.players = [new Player({
-    name: 'Test player'
-  })];
-}
-
-module.exports = Tetris;
-
-Tetris.prototype = {
-  start: function() {
-    console.log("Game started");
-
-    
-  },
-  test_render: function() {
-    var grid = utils.clone_array(this.players[0].board.rows);
-    var block = this.players[0].board.block;
-    if (block) {
-      utils.overlay_array(grid, block.get_rows(), block.y, block.x);
-    }
-    utils.render_array(grid);
-    console.log('---');
-  }
-};
-});
-
 require.define("/utils.js", function (require, module, exports, __dirname, __filename) {
 function multi_array(dimensions, default_val) {
   var arr = [], i;
@@ -455,13 +425,6 @@ function find_coords(array, target) {
   return undefined;
 }
 
-function get_dimensions(array) {
-  return {
-    height: array.length,
-    width: array[0].length
-  };
-}
-
 module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
@@ -505,20 +468,12 @@ Player.prototype = {
   },
   shift_right: function() {
     if (this.board.block) {
-      if (this.board.block.fits(this.board, this.board.block.y, this.board.block.x + 1)) {
-        this.board.block.x++;
-        return true;
-      }
-      else return false;
+      this.board.block.x++;
     }
   },
   shift_left: function() {
     if (this.board.block) {
-      if (this.board.block.fits(this.board, this.board.block.y, this.board.block.x - 1)) {
-        this.board.block.x--;
-        return true;
-      }
-      else return false;
+      this.board.block.x--;
     }
   },
   rotate_left: function() {
@@ -1711,53 +1666,37 @@ Block.prototype = {
       }
     });
     return rotates;
-  },
-  fits: function(board, target_y, target_x) {
-    var rows = this.get_rows();
-    var dimensions = utils.get_dimensions(rows);
-    for (var y = 0; y < dimensions.height; y++) {
-      for (var x = 0; x < dimensions.width; x++) {
-        var board_tile = (board[y + target_y][x + target_x] === ' ' || board[y + target_y][x + target_x] === '.') ? false : true;
-        var this_tile = (rows[y][x] === ' ' || rows[y][x] === '.') ? false : true;
-        if (board_tile && this_tile) return false;
-      }
-    }
-    return true;
   }
 };
 });
 
-require.define("/index.js", function (require, module, exports, __dirname, __filename) {
-    var TetrisGame = require('./tetris_game');
+require.define("/tetris_game.js", function (require, module, exports, __dirname, __filename) {
+    var utils = require('./utils');
+var Player = require('./player');
 
-var game = new TetrisGame();
-
-game.start();
-
-// Create test right column
-for (var y = 0; y < 22; y++) {
-  game.players[0].board.rows[y][11] = 'X';
+function Tetris() {
+  this.players = [new Player({
+    name: 'Test player'
+  })];
 }
 
-// Add our block
-game.players[0].add_block(0, 1, 7);
-game.test_render();
+module.exports = Tetris;
 
-// Drop it a level
-game.players[0].drop_block();
-game.test_render();
+Tetris.prototype = {
+  start: function() {
+    console.log("Game started");
 
-// Shift it right a bunch
-game.players[0].shift_right();
-game.test_render();
-game.players[0].shift_right();
-game.test_render();
-game.players[0].shift_right();  // Shouldn't work
-game.test_render();
-
-// Rotate left
-game.players[0].rotate_left();
-game.test_render();
-
+    
+  },
+  test_render: function() {
+    var grid = utils.clone_array(this.players[0].board.rows);
+    var block = this.players[0].board.block;
+    if (block) {
+      utils.overlay_array(grid, block.get_rows(), block.y, block.x);
+    }
+    utils.render_array(grid);
+    console.log('---');
+  }
+};
 });
-require("/index.js");
+require("/tetris_game.js");
