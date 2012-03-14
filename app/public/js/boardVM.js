@@ -50,7 +50,7 @@ Board.prototype = {
   clear_board: function() {
     for(var r = 0; r < this.width(); r++) {
       for(var c = 0; c < this.height(); c++) {
-        this.rows()[c][r].on(false); 
+        this.rows()[c][r].on(false);
       }
     }
   },
@@ -58,7 +58,7 @@ Board.prototype = {
     this.clear_board();
     this.player().add_block(6,0,7);
     this.render(this.player().board.block);
-  }, 
+  },
   down: function() {
     this.clear_board();
     this.player().shift_down();
@@ -75,6 +75,15 @@ Board.prototype = {
     this.render(this.player().board.block);
   },
   render: function(block) {
-    this.rows()[block.y][block.x].on(true);
+    var block_rows = block.get_rows();
+    var rows = this.rows();
+    var on, line;
+    for (var y = 0; y < block_rows.length; y++) {
+      for (var x = 0; x < block_rows[y].length; x++) {
+        on = block_rows[y][x];
+        if (on !== ' ') rows[block.y + y][block.x + x].on(true);
+      }
+    }
+
   }
 };
