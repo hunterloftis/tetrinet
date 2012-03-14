@@ -838,11 +838,6 @@
     height: 0px;
   }
 }
-.wrap {
-  max-width: page_width;
-  position: relative;
-  margin: 0 auto;
-}
 .pop {
   -webkit-animation: pop 250ms ease-out;
   -moz-animation: pop 250ms ease-out;
