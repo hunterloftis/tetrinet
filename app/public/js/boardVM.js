@@ -1,11 +1,4 @@
-
-var TetrisGame = require('./tetris_game');
-
-var game = new TetrisGame();
-var player = game.players[0];
-
 var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black'];
-
 
 
 /**
@@ -44,6 +37,7 @@ function Board(options) {
 
   var multi_array = require('./utils').multi_array;
 
+  this.player = ko.observable(options.player);
   this.width = ko.observable(options.width || 12);
   this.height = ko.observable(options.height || 22);
   this.rows = ko.observableArray(multi_array([this.height(), this.width()], function() {
@@ -53,5 +47,30 @@ function Board(options) {
 }
 
 Board.prototype = {
+  clear_board: function() {
+    for(var r = 0; r < this.width(); r++) {
+      for(var c = 0; c < this.height(); c++) {
+        this.rows()[c][r].on(false); 
+      }
+    }
+  },
+  start: function() {
+    this.clear_board();
+    this.player().add_block(6,0,7);
+    this.render(this.player().board.block);
+  }, 
+  drop: function() {
+    this.clear_board();
+    this.player().drop_block();
+    this.render(this.player().board.block);
+  },
+  left: function() {
 
+  },
+  right: function() {
+
+  },
+  render: function(block) {
+    this.rows()[block.y][block.x].on(true);
+  }
 };

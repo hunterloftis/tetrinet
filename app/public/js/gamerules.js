@@ -366,7 +366,7 @@ Tetris.prototype = {
       utils.overlay_array(grid, block.get_rows(), block.y, block.x);
     }
     utils.render_array(grid);
-    console.log('---');
+    console.log('');
   }
 };
 });
@@ -469,7 +469,8 @@ module.exports = {
   render_array: render_array,
   clone_array: clone_array,
   overlay_array: overlay_array,
-  find_coords: find_coords
+  find_coords: find_coords,
+  get_dimensions: get_dimensions
 };
 
 });
@@ -499,23 +500,13 @@ Player.prototype = {
     this.board.block = new_block;
   },
   drop_block: function() {
-    if (this.board.block) {
-      this.board.block.y++;
-    }
+    return this.shift(1, 0);
   },
-  shift_right: function() {
+  shift: function(dy, dx) {
     if (this.board.block) {
-      if (this.board.block.fits(this.board, this.board.block.y, this.board.block.x + 1)) {
-        this.board.block.x++;
-        return true;
-      }
-      else return false;
-    }
-  },
-  shift_left: function() {
-    if (this.board.block) {
-      if (this.board.block.fits(this.board, this.board.block.y, this.board.block.x - 1)) {
-        this.board.block.x--;
+      if (this.board.block.fits(this.board.rows, this.board.block.y + dy, this.board.block.x + dx)) {
+        this.board.block.x += dx;
+        this.board.block.y += dy;
         return true;
       }
       else return false;
@@ -1715,6 +1706,13 @@ Block.prototype = {
   fits: function(board, target_y, target_x) {
     var rows = this.get_rows();
     var dimensions = utils.get_dimensions(rows);
+    var bounds = utils.get_dimensions(board);
+
+    // Are we still on the board?
+    if (target_y < 0 || target_x < 0) return false;
+    if (target_y + dimensions.height > bounds.height || target_x + dimensions.width > bounds.width) return false;
+
+    // Are we free of overlap with existing tiles?
     for (var y = 0; y < dimensions.height; y++) {
       for (var x = 0; x < dimensions.width; x++) {
         var board_tile = (board[y + target_y][x + target_x] === ' ' || board[y + target_y][x + target_x] === '.') ? false : true;
@@ -1722,6 +1720,8 @@ Block.prototype = {
         if (board_tile && this_tile) return false;
       }
     }
+
+    // ...yep.
     return true;
   }
 };
@@ -1740,24 +1740,34 @@ for (var y = 0; y < 22; y++) {
 }
 
 // Add our block
-game.players[0].add_block(0, 1, 7);
+console.log("Add block:");
+game.players[0].add_block(6, 0, 7);
 game.test_render();
 
 // Drop it a level
+console.log("Drop it a level:");
 game.players[0].drop_block();
 game.test_render();
 
 // Shift it right a bunch
-game.players[0].shift_right();
-game.test_render();
-game.players[0].shift_right();
-game.test_render();
-game.players[0].shift_right();  // Shouldn't work
-game.test_render();
+for (var i = 0; i < 2; i++) {
+  var shifted = game.players[0].shift(0, 1);
+  if (!shifted) console.log("Couldn't shift right:");
+  else console.log("Shift right:");
+  game.test_render();
+}
 
 // Rotate left
+console.log("Rotate left:");
 game.players[0].rotate_left();
 game.test_render();
 
+// Shift it left a bunch
+for (var i = 0; i < 10; i++) {
+  var shifted = game.players[0].shift(0, -1);
+  if (!shifted) console.log("Couldn't shift left:");
+  else console.log("Shift left:");
+  game.test_render();
+}
 });
 require("/index.js");

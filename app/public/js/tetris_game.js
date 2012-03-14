@@ -425,6 +425,13 @@ function find_coords(array, target) {
   return undefined;
 }
 
+function get_dimensions(array) {
+  return {
+    height: array.length,
+    width: array[0].length
+  };
+}
+
 module.exports = {
   multi_array: multi_array,
   multi_array_from_strings: multi_array_from_strings,
@@ -432,7 +439,8 @@ module.exports = {
   render_array: render_array,
   clone_array: clone_array,
   overlay_array: overlay_array,
-  find_coords: find_coords
+  find_coords: find_coords,
+  get_dimensions: get_dimensions
 };
 
 });
@@ -462,18 +470,16 @@ Player.prototype = {
     this.board.block = new_block;
   },
   drop_block: function() {
-    if (this.board.block) {
-      this.board.block.y++;
-    }
+    return this.shift(1, 0);
   },
-  shift_right: function() {
+  shift: function(dy, dx) {
     if (this.board.block) {
-      this.board.block.x++;
-    }
-  },
-  shift_left: function() {
-    if (this.board.block) {
-      this.board.block.x--;
+      if (this.board.block.fits(this.board.rows, this.board.block.y + dy, this.board.block.x + dx)) {
+        this.board.block.x += dx;
+        this.board.block.y += dy;
+        return true;
+      }
+      else return false;
     }
   },
   rotate_left: function() {
@@ -1666,6 +1672,27 @@ Block.prototype = {
       }
     });
     return rotates;
+  },
+  fits: function(board, target_y, target_x) {
+    var rows = this.get_rows();
+    var dimensions = utils.get_dimensions(rows);
+    var bounds = utils.get_dimensions(board);
+
+    // Are we still on the board?
+    if (target_y < 0 || target_x < 0) return false;
+    if (target_y + dimensions.height > bounds.height || target_x + dimensions.width > bounds.width) return false;
+
+    // Are we free of overlap with existing tiles?
+    for (var y = 0; y < dimensions.height; y++) {
+      for (var x = 0; x < dimensions.width; x++) {
+        var board_tile = (board[y + target_y][x + target_x] === ' ' || board[y + target_y][x + target_x] === '.') ? false : true;
+        var this_tile = (rows[y][x] === ' ' || rows[y][x] === '.') ? false : true;
+        if (board_tile && this_tile) return false;
+      }
+    }
+
+    // ...yep.
+    return true;
   }
 };
 });
@@ -1695,7 +1722,7 @@ Tetris.prototype = {
       utils.overlay_array(grid, block.get_rows(), block.y, block.x);
     }
     utils.render_array(grid);
-    console.log('---');
+    console.log('');
   }
 };
 });
