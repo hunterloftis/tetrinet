@@ -49,7 +49,6 @@ function load_templates(templates) {
   var types = [];
   _(templates).each(function(template, i) {
     var new_type = utils.multi_array_from_strings(template);
-    if (i === 1) console.dir(new_type);
     types.push(new_type);
   });
   
@@ -69,24 +68,18 @@ function load_templates(templates) {
 
 var block_types = load_templates(templates);
 
-for (var i = 0; i < 7; i++) {
-  console.log('');
-  console.log(i + ':');
-  for (var r = 0; r < 4; r++) {
-    console.log('');
-    utils.render_array(block_types[i][r]);
-  }
-}
-
 module.exports = Block;
 
-function Block(type_index) {
+function Block(type_index, options) {
   this.type = block_types[type_index];
-
+  this.rotation = 0;
+  this.x = 0;
+  this.y = 0;
+  _.extend(this, options);
 }
 
 Block.prototype = {
-  load_templates: function() {
-    
+  get_rows: function() {
+    return this.type[this.rotation];
   }
 };
