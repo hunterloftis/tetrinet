@@ -48,7 +48,6 @@ function Board(options) {
 
 Board.prototype = {
   clear_board: function() {
-    return;
     var rows = this.rows();
     for(var r = 0; r < this.width(); r++) {
       for(var c = 0; c < this.height(); c++) {
@@ -62,17 +61,14 @@ Board.prototype = {
     this.render(this.player().board.block);
   },
   down: function() {
-    this.clear_board();
     this.player().shift_down();
     this.render(this.player().board.block);
   },
   left: function() {
-    this.clear_board();
     this.player().shift_left();
     this.render(this.player().board.block);
   },
   right: function() {
-    this.clear_board();
     this.player().shift_right();
     this.render(this.player().board.block);
   },
