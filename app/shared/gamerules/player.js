@@ -1,6 +1,7 @@
 var _ = require('underscore')._;
 
 var Board = require('./board');
+var Block = require('./block');
 
 module.exports = Player;
 
@@ -10,6 +11,37 @@ function Player(options) {
 }
 
 Player.prototype = {
+  add_block: function(type, row, column) {
+    if (this.board.block) {
+      throw new Error("A block already exists on this board");
+    }
+    var new_block = new Block(type, {
+      y: row,
+      x: column
+    });
+    this.board.block = new_block;
+  },
+  drop_block: function() {
+    if (this.board.block) {
+      this.board.block.y++;
+    }
+  },
+  shift_right: function() {
+    if (this.board.block) {
+      this.board.block.x++;
+    }
+  },
+  shift_left: function() {
+    if (this.board.block) {
+      this.board.block.x--;
+    }
+  },
+  rotate_left: function() {
+    if (this.board.block) this.board.block.rotate(true);
+  },
+  rotate_right: function() {
+    if (this.board.block) this.board.block.rotate(false);
+  },
   create_game: function(user_id) {
     // End any games the user is currently running
     // Does the user have permission to create a game?

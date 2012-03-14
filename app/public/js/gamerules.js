@@ -341,97 +341,209 @@ exports.extname = function(path) {
 
 });
 
-require.define("/block.js", function (require, module, exports, __dirname, __filename) {
-var _ = require('underscore')._;
-
+require.define("/tetris_game.js", function (require, module, exports, __dirname, __filename) {
 var utils = require('./utils');
+var Player = require('./player');
 
-var templates = [
-  [
+module.exports = Tetris;
 
-    'x',
-    'x',
-    'o',    // pivot point
-    'x'
-
-  ],[
-
-    'xx',   // no pivot point == no pivoting
-    'xx'
-
-  ],[
-
-    ' x',
-    ' o',
-    'xx'
-
-  ],[
-
-    'x ',
-    'o ',
-    'xx'
-
-  ],[
-
-    'xo ',
-    ' xx'
-
-  ],[
-
-    ' ox',
-    'xx '
-
-  ],[
-
-    'xox',
-    ' x '
-
-  ]
-];
-
-function load_templates(templates) {
-  var types = [];
-  _(templates).each(function(template, i) {
-    var new_type = utils.multi_array_from_strings(template);
-    if (i === 1) console.dir(new_type);
-    types.push(new_type);
-  });
-  
-  types = _(types).map(function(type) {
-    var rotations = [];
-    var last = type;
-    for (var i = 0; i < 4; i++) {
-      rotations.push(last);
-      var rotated = utils.rotate_array(last, true);
-      last = rotated;
-    }
-    return rotations;
-  });
-
-  return types;
+function Tetris() {
+  this.players = [new Player({
+    name: 'Test player'
+  })];
 }
 
-var block_types = load_templates(templates);
+Tetris.prototype = {
+  start: function() {
+    console.log("Game started");
 
-for (var i = 0; i < 7; i++) {
-  console.log('');
-  console.log(i + ':');
-  for (var r = 0; r < 4; r++) {
-    console.log('');
-    utils.render_array(block_types[i][r]);
+    
+  },
+  test_render: function() {
+    var grid = utils.clone_array(this.players[0].board.rows);
+    var block = this.players[0].board.block;
+    if (block) {
+      utils.overlay_array(grid, block.get_rows(), block.y, block.x);
+    }
+    utils.render_array(grid);
+    console.log('---');
+  }
+};
+});
+
+require.define("/utils.js", function (require, module, exports, __dirname, __filename) {
+function multi_array(dimensions, default_val) {
+  var arr = [], i;
+  if (dimensions.length === 1) {       // Sentinel - stop when we're at the innermost array
+    for (i = 0; i < dimensions[0]; i++) {
+      arr[i] = default_val;
+    }
+  }
+  else {
+    for (i = 0; i < dimensions[0]; i++) {
+      arr[i] = multi_array(dimensions.slice(1), default_val);
+    }
+  }
+  return arr;
+}
+
+function clone_array(array) {
+  var clone = [];
+  for (var y = 0; y < array.length; y++) {
+    clone[y] = [];
+    for (var x = 0; x < array[y].length; x++) {
+      clone[y][x] = array[y][x];
+    }
+  }
+  return clone;
+}
+
+function overlay_array(dest, src, off_y, off_x) {
+  var height = src.length;
+  var width = src[0].length;
+  for (var y = 0; y < height; y++) {
+    for (var x = 0; x < width; x++) {
+      dest[y + off_y][x + off_x] = src[y][x];
+    }
   }
 }
 
-module.exports = Block;
-
-function Block(type_index) {
-  this.type = block_types[type_index];
-
+function multi_array_from_strings(string_array) {
+  var rows = [];
+  for (var y = 0; y < string_array.length; y++) {
+    var row = string_array[y];
+    rows[y] = [];
+    for (var x = 0; x < row.length; x++) {
+      var val = row.substr(x, 1);
+      rows[y].push(val);
+    }
+  }
+  return rows;
 }
 
-Block.prototype = {
-  load_templates: function() {
-    
+function rotate_array(array, counter) {
+  var height = array.length;
+  var width = array[0].length;
+  var rotated = multi_array([width, height], 'x'); // Inverted from (height, width)
+  for (var y = 0; y < height; y++) {
+    for (var x = 0; x < width; x++) {
+      var target_x = counter ? height - y - 1 : y;
+      var target_y = counter ? x : width - x - 1;
+      rotated[target_y][target_x] = array[y][x];
+    }
+  }
+  return rotated;
+}
+
+function render_array(rows) {
+  for (var y = 0; y < rows.length; y++) {
+    var row = rows[y];
+    var line = '';
+    for (var x = 0; x < row.length; x++) {
+      line += row[x];
+    }
+    console.log(line);
+  }
+}
+
+function find_coords(array, target) {
+  for (var y = 0; y < array.length; y++) {
+    for (var x = 0; x < array[y].length; x++) {
+      if (array[y][x] === target) return {x: x, y: y};
+    }
+  }
+  return undefined;
+}
+
+module.exports = {
+  multi_array: multi_array,
+  multi_array_from_strings: multi_array_from_strings,
+  rotate_array: rotate_array,
+  render_array: render_array,
+  clone_array: clone_array,
+  overlay_array: overlay_array,
+  find_coords: find_coords
+};
+
+});
+
+require.define("/player.js", function (require, module, exports, __dirname, __filename) {
+var _ = require('underscore')._;
+
+var Board = require('./board');
+
+module.exports = Player;
+
+function Player(options) {
+  _.extend(this, options);
+  this.board = new Board();
+}
+
+Player.prototype = {
+  add_block: function(type, row, column) {
+    if (this.board.block) {
+      throw new Error("A block already exists on this board");
+    }
+    var new_block = new Block(type, {
+      y: row,
+      x: column
+    });
+    this.board.block = new_block;
+  },
+  drop_block: function() {
+    if (this.board.block) {
+      this.board.block.y++;
+    }
+  },
+  shift_right: function() {
+    if (this.board.block) {
+      this.board.block.x++;
+    }
+  },
+  shift_left: function() {
+    if (this.board.block) {
+      this.board.block.x--;
+    }
+  },
+  rotate_left: function() {
+    if (this.board.block) this.board.block.rotate(true);
+  },
+  rotate_right: function() {
+    if (this.board.block) this.board.block.rotate(false);
+  },
+  create_game: function(user_id) {
+    // End any games the user is currently running
+    // Does the user have permission to create a game?
+  },
+  join_game: function(user_id, game_id) {
+    // Leave any other games the user_id is in
+    // Does user_id have permission to join this game?
+    // Does the game have a space available?
+  },
+  end_game: function(user_id, game_id) {
+    // Does the user_id have permissin to end this game?
+  },
+  use_special: function(user_id, player_id) {
+    // Find the next special in the user's queueu
+    // Is player_id in the same game?
+  },
+  clockwise: function(user_id) {
+
+  },
+  counter_clockwise: function(user_id) {
+
+  },
+  left: function(user_id) {
+
+  },
+  right: function(user_id) {
+
+  },
+  down: function(user_id) {
+
+  },
+  drop: function(user_id) {
+
   }
 };
 });
@@ -1443,70 +1555,164 @@ require.define("/node_modules/underscore/underscore.js", function (require, modu
 
 });
 
-require.define("/utils.js", function (require, module, exports, __dirname, __filename) {
-function multi_array(dimensions, default_val) {
-  var arr = [], i;
-  if (dimensions.length === 1) {       // Sentinel - stop when we're at the innermost array
-    for (i = 0; i < dimensions[0]; i++) {
-      arr[i] = default_val;
-    }
-  }
-  else {
-    for (i = 0; i < dimensions[0]; i++) {
-      arr[i] = multi_array(dimensions.slice(1), default_val);
-    }
-  }
-  return arr;
+require.define("/board.js", function (require, module, exports, __dirname, __filename) {
+var utils = require('./utils');
+var Block = require('./block');
+
+module.exports = Board;
+
+function Board() {
+  this.rows = [];
+  this.block = undefined;
+  this.width = 12;
+  this.height = 22;
+  this.empty();
 }
 
-function multi_array_from_strings(string_array) {
-  var rows = [];
-  for (var y = 0; y < string_array.length; y++) {
-    var row = string_array[y];
-    rows[y] = [];
-    for (var x = 0; x < row.length; x++) {
-      var val = row.substr(x, 1);
-      rows[y].push(val);
-    }
+Board.prototype = {
+  empty: function() {
+    this.rows = utils.multi_array([this.height, this.width], '.');
+  },
+  is_dead: function() {
+    // Check if we've reached the top
   }
-  return rows;
-}
-
-function rotate_array(array, counter) {
-  var height = array.length;
-  var width = array[0].length;
-  var rotated = multi_array([width, height], 'x'); // Inverted from (height, width)
-  for (var y = 0; y < height; y++) {
-    for (var x = 0; x < width; x++) {
-      var target_x = counter ? height - y - 1 : y;
-      var target_y = counter ? x : width - x - 1;
-      rotated[target_y][target_x] = array[y][x];
-    }
-  }
-  return rotated;
-}
-
-function render_array(rows) {
-  for (var y = 0; y < rows.length; y++) {
-    var row = rows[y];
-    var line = '';
-    for (var x = 0; x < row.length; x++) {
-      line += row[x];
-    }
-    console.log(line);
-  }
-}
-
-module.exports = {
-  multi_array: multi_array,
-  multi_array_from_strings: multi_array_from_strings,
-  rotate_array: rotate_array,
-  render_array: render_array
 };
+});
 
+require.define("/block.js", function (require, module, exports, __dirname, __filename) {
+var _ = require('underscore')._;
+
+var utils = require('./utils');
+
+var templates = [
+  [
+
+    'x',
+    'x',
+    'o',    // pivot point
+    'x'
+
+  ],[
+
+    'zx',   // no pivot point == no pivoting, z = this is the reference point`
+    'xx'
+
+  ],[
+
+    ' x',
+    ' o',
+    'xx'
+
+  ],[
+
+    'x ',
+    'o ',
+    'xx'
+
+  ],[
+
+    'xo ',
+    ' xx'
+
+  ],[
+
+    ' ox',
+    'xx '
+
+  ],[
+
+    'xox',
+    ' x '
+
+  ]
+];
+
+function load_templates(templates) {
+  var types = [];
+  _(templates).each(function(template, i) {
+    var new_type = utils.multi_array_from_strings(template);
+    types.push(new_type);
+  });
+  
+  types = _(types).map(function(type) {
+    var rotations = [];
+    var last = type;
+    for (var i = 0; i < 4; i++) {
+      rotations.push(last);
+      var rotated = utils.rotate_array(last, true);
+      last = rotated;
+    }
+    return rotations;
+  });
+
+  return types;
+}
+
+var block_types = load_templates(templates);
+
+module.exports = Block;
+
+function Block(type_index, options) {
+  this.type = block_types[type_index];
+  this.rotation = 0;
+  this.x = 0;
+  this.y = 0;
+  _.extend(this, options);
+  this.rotates = this.find_rotation_points();
+}
+
+Block.prototype = {
+  get_rows: function() {
+    return this.type[this.rotation];
+  },
+  rotate: function(counter) {
+    if (this.rotates) {
+      var rows = this.get_rows();
+      var old_axis = rows.axis;
+      if (counter) {
+        this.block.rotation--;
+        if (this.block.rotation < 0) this.block.rotation = 3;
+      }
+      else {
+        this.block.rotation++;
+        if (this.block.rotation > 3) this.block.rotation = 0;
+      }
+      rows = this.get_rows();
+      var new_axis = rows.axis;
+      var off_x = old_axis.x - new_axis.x;
+      var off_y = old_axis.y - new_axis.y;
+      this.x += off_x;
+      this.y += off_y;
+    }
+  },
+  find_rotation_points: function() {
+    var rotates = false;
+    _(this.type).each(function(grid) {
+      var axis = utils.find_coords(grid, 'o');
+      if (axis) {
+        grid.axis = axis;
+        rotates = true;
+      }
+    });
+    return rotates;
+  }
+};
 });
 
 require.define("/index.js", function (require, module, exports, __dirname, __filename) {
-    var block = require('./block');
+    var TetrisGame = require('./tetris_game');
+
+var game = new TetrisGame();
+
+game.start();
+game.players[0].add_block(3, 1, 7);
+game.test_render();
+game.players[0].drop_block();
+game.test_render();
+game.players[0].shift_right();
+game.test_render();
+game.players[0].rotate_left();
+game.test_render();
+
 });
 require("/index.js");
