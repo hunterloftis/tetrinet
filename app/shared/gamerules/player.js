@@ -21,8 +21,14 @@ Player.prototype = {
     });
     this.board.block = new_block;
   },
-  drop_block: function() {
-    return this.shift(1, 0);
+  shift_down: function() {
+    if (this.shift(1,0)) {
+      return true;
+    }
+    else {
+      this.board.apply_block();
+      return false;
+    }
   },
   shift: function(dy, dx) {
     if (this.board.block) {
@@ -34,11 +40,17 @@ Player.prototype = {
       else return false;
     }
   },
+  shift_left: function() {
+    return this.shift(0, -1);
+  },
+  shift_right: function() {
+    return this.shift(0, 1);
+  },
   rotate_left: function() {
-    if (this.board.block) this.board.block.rotate(true);
+    if (this.board.block) return this.board.block.rotate(this.board.rows, true);
   },
   rotate_right: function() {
-    if (this.board.block) this.board.block.rotate(false);
+    if (this.board.block) return this.board.block.rotate(this.board.rows, false);
   },
   create_game: function(user_id) {
     // End any games the user is currently running
@@ -55,23 +67,5 @@ Player.prototype = {
   use_special: function(user_id, player_id) {
     // Find the next special in the user's queueu
     // Is player_id in the same game?
-  },
-  clockwise: function(user_id) {
-
-  },
-  counter_clockwise: function(user_id) {
-
-  },
-  left: function(user_id) {
-
-  },
-  right: function(user_id) {
-
-  },
-  down: function(user_id) {
-
-  },
-  drop: function(user_id) {
-
   }
 };
