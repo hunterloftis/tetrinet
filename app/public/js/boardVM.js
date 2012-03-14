@@ -48,9 +48,10 @@ function Board(options) {
 
 Board.prototype = {
   clear_board: function() {
+    var rows = this.rows();
     for(var r = 0; r < this.width(); r++) {
       for(var c = 0; c < this.height(); c++) {
-        this.rows()[c][r].on(false);
+        rows[c][r].on(false);
       }
     }
   },
