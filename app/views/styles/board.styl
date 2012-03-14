@@ -1,0 +1,20 @@
+@import 'mixins'
+@import 'animations'
+@import 'library'
+
+#board
+  width 387px
+  height 707px
+  background rgba(255,255,255,0.7)
+  border 1px solid #444
+  box-shadow 0 0 5px #333
+  border-radius 3px
+  margin 30px auto
+
+  .block
+    width 30px
+    height 30px
+    margin 1px
+    float left
+    &.on
+      background #111

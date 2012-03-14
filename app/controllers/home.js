@@ -6,6 +6,13 @@ module.exports = function(app) {
     index: [
       function(req, res, next) {
         res.render('home/index');
+      }],
+
+
+    // test for board
+    board: [
+      function(req, res, next) {
+        res.render('home/board');
       }]
 
   };
