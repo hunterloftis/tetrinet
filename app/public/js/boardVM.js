@@ -1,10 +1,8 @@
 
 var TetrisGame = require('./tetris_game');
-var asdf = require('./player');
 
 var game = new TetrisGame();
-console.log("players: ", game.players);
-
+var player = game.players[0];
 
 var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black'];
 
@@ -29,7 +27,7 @@ Block.prototype = {
   },
 
   random_color: function() {
-    this.color_code = available_colors[Math.floor(Math.random() * available_colors.length)];
+    this.color(available_colors[Math.floor(Math.random() * available_colors.length)]);
   }
 
 };

@@ -12,11 +12,22 @@ append scripts
   script
 
     var BoardVM = new Board();
+    var started = false;
 
     $(function(){
       ko.applyBindings(BoardVM);
 
-      randomBlock();
+      $("#startGame").click(function() {
+        if (!started) {
+          randomBlock();
+          started = true;
+          $("#startGame").html("STOP")
+        }
+        else {
+          started = false;
+          $("#startGame").html("START")
+        }
+      });
     })
 
     function randomBlock() {
@@ -26,15 +37,18 @@ append scripts
       var block = rows[random_row][random_col];
       var status = block.on();
 
+      block.random_color();
       block.on(!status);
 
       setTimeout(function(){
-        randomBlock();
+        if (started) randomBlock();
       }, 1)
+      
     }
 
 
 block content
+  button.button#startGame START
   #board(data-bind="foreach:rows")
     // ko foreach:$data
     .block(data-bind="css:{on:on, red:(color() == 'red'), blue:(color() == 'blue'), green:(color() == 'green'), purple:(color() == 'purple'), orange:(color() == 'orange')}")
