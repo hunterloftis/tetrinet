@@ -930,6 +930,20 @@ button.active:hover,
 .button.active:hover {
   color: #ff0;
 }
+#overlay {
+  position: absolute;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.70);
+  text-align: center;
+  padding: 50px;
+}
+#overlay button {
+  font-size: 35px;
+}
 #score {
   position: absolute;
   top: 0;
@@ -990,7 +1004,7 @@ button.active:hover,
   right: 10%;
   background: rgba(0,0,0,0.10);
   color: #eee;
-  font-size: 30px;
+  font-size: 24px;
   text-align: center;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
