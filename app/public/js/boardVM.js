@@ -92,7 +92,6 @@ Board.prototype = {
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
         on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
-        rows[y][x].color(available_colors[block.type_index]);
         rows[y][x].on(on);
       }
     }
@@ -104,7 +103,10 @@ Board.prototype = {
       for (y = 0; y < block_rows.length; y++) {
         for (x = 0; x < block_rows[y].length; x++) {
           on = (block_rows[y][x] !== ' ');
-          if (on) rows[block.y + y][block.x + x].on(true);
+          if (on) {
+            rows[block.y + y][block.x + x].color(available_colors[block.type_index]);
+            rows[block.y + y][block.x + x].on(true);
+          }
         }
       }
     }
