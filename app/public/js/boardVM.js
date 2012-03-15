@@ -56,8 +56,10 @@ Board.prototype = {
     }
   },
   start: function(type) {
-    this.clear_board();
-    this.player().add_block(type,0,7);
+    if (typeof type == "undefined") {
+      type = Math.floor(Math.random()*7);
+    }
+    this.player().add_block(type,1,7);
     this.render(this.player().board.block);
   },
   down: function() {
@@ -89,7 +91,6 @@ Board.prototype = {
       for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
           on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
-          rows[y][x].color(available_colors[block.type_index]);
           rows[y][x].on(on);
         }
       }
@@ -98,7 +99,11 @@ Board.prototype = {
       for (var y = 0; y < block_rows.length; y++) {
         for (var x = 0; x < block_rows[y].length; x++) {
           on = (block_rows[y][x] !== ' ');
-          if (on) rows[block.y + y][block.x + x].on(true);
+          if (on) {
+            
+            rows[block.y + y][block.x + x].color(available_colors[block.type_index]);
+            rows[block.y + y][block.x + x].on(true);
+          }
         }
       }
     }
