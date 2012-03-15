@@ -1,6 +1,11 @@
 var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black', 'yellow'];
+var base_speed = 300;
+var speed_multi = 2;
 
 var radio = require('radio');
+var BlockClass = require('./block');
+var block_types = new BlockClass();
+block_types = block_types.templates;
 
 /**
  * individual blocks in grid
@@ -39,8 +44,10 @@ function Board(options) {
   var multi_array = require('./utils').multi_array;
 
   this.player = ko.observable(options.player);
+  this.score = ko.observable(0);
+  this.high_score = ko.observable(localStorage.high_score || 0);
   this.game_over = ko.observable(false);
-  this.speed = ko.observable(300);
+  this.speed = ko.observable(base_speed);
   this.next_block = ko.observable(null);
   this.width = ko.observable(options.width || 12);
   this.height = ko.observable(options.height || 22);
@@ -51,6 +58,21 @@ function Board(options) {
   // Events
   radio('player.update').subscribe([function() {
     this.render();
+  }, this]);
+
+  radio('player.score').subscribe([function(score) {
+    
+    // set score observable
+    this.score(this.score()+(score*score));
+
+    // change speed
+    this.speed(base_speed - (this.score()*speed_multi));
+
+    // set high score
+    if (this.score() > this.high_score()) {
+      this.high_score(this.score());
+      localStorage.high_score = this.high_score();
+    }
   }, this]);
 
 }
@@ -65,7 +87,24 @@ Board.prototype = {
     }
   },
   set_next_block: function() {
-    this.next_block(this.player().next_block);
+    
+    var block_output = '';
+    var rows = block_types[this.player().next_block][0];
+    for (var y = 0; y < rows.length; y++) {
+      var row = rows[y];
+      var line = '';
+      for (var x = 0; x < row.length; x++) {
+        if (row[x] != ' ') {
+          block_output += '<div class="'+available_colors[this.player().next_block]+'"></div>';
+        }
+        else {
+          block_output += '<div class="blank"></div>'; 
+        }
+      }
+      block_output += '<br>';
+    }
+
+    this.next_block(block_output);
   },
   move_block: function() {
     var self = this;
@@ -82,6 +121,9 @@ Board.prototype = {
     }
     this.player().add_block(type,0,5);
     this.render(this.player().board.block);
+  },
+  drop: function() {
+
   },
   down: function() {
     this.player().shift_down();
@@ -121,10 +163,8 @@ Board.prototype = {
       for (x = 0; x < width; x++) {
         on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
         if (on && y < 2) {
-          console.log(this.player());
           this.player().game_over = true;
           this.game_over(true);
-          console.log("Game Over");
         }
         rows[y][x].on(on);
       }

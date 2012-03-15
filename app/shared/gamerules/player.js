@@ -37,7 +37,6 @@ Player.prototype = {
         radio('player.update').broadcast(this);
       }
       if (!this.game_over) {
-        console.log("player object game over", this.game_over);
         this.add_block(this.next_block, 0, 5);
         this.next_block = Math.floor(Math.random()*7);
       }

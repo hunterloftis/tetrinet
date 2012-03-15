@@ -73,6 +73,7 @@ module.exports = Block;
 function Block(type_index, options) {
   this.type_index = type_index;
   this.type = block_types[type_index];
+  this.templates = block_types;
   this.rotation = 0;
   this.x = 0;
   this.y = 0;

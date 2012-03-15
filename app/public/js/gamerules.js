@@ -688,7 +688,6 @@ Player.prototype = {
         radio('player.update').broadcast(this);
       }
       if (!this.game_over) {
-        console.log("player object game over", this.game_over);
         this.add_block(this.next_block, 0, 5);
         this.next_block = Math.floor(Math.random()*7);
       }
@@ -1749,6 +1748,7 @@ require.define("/node_modules/underscore/underscore.js", function (require, modu
 require.define("/board.js", function (require, module, exports, __dirname, __filename) {
 var utils = require('./utils');
 var Block = require('./block');
+var radio = require('radio');
 
 module.exports = Board;
 
@@ -1774,14 +1774,14 @@ Board.prototype = {
     var y = this.rows.length;
     var filled;
     var unfilled = [];
-    var any_completed = false;
+    var num_completed = 0;
     while(y--) {
       filled = 0;
       for (var x = 0; x < this.rows[y].length; x++) {
         if (this.rows[y][x] !== ' ') filled++;
       }
       if (filled === this.rows[y].length) {
-        any_completed = true;
+        num_completed++;
       }
       else {
         unfilled.unshift(this.rows[y]);
@@ -1792,7 +1792,8 @@ Board.prototype = {
       unfilled.unshift(new_row);
     }
     this.rows = unfilled;
-    return any_completed;
+    if (num_completed > 0) radio('player.score').broadcast(num_completed); 
+    return num_completed > 0;
   },
   is_dead: function() {
     // Check if we've reached the top
@@ -1876,6 +1877,7 @@ module.exports = Block;
 function Block(type_index, options) {
   this.type_index = type_index;
   this.type = block_types[type_index];
+  this.templates = block_types;
   this.rotation = 0;
   this.x = 0;
   this.y = 0;
