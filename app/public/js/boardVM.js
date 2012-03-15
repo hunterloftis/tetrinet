@@ -1,6 +1,6 @@
-var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black', 'yellow'];
-var base_speed = 300;
-var speed_multi = 2;
+var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black', 'yellow'],
+    base_speed = 300,
+    speed_multi = 2;
 
 var radio = require('radio');
 var BlockClass = require('./block');
@@ -43,6 +43,7 @@ function Board(options) {
 
   var multi_array = require('./utils').multi_array;
 
+  this.started = ko.observable(false);
   this.player = ko.observable(options.player);
   this.score = ko.observable(0);
   this.high_score = ko.observable(localStorage.high_score || 0);
@@ -87,6 +88,18 @@ Board.prototype = {
       }
     }
   },
+  start: function() {
+    if (!this.started()) {
+      this.started(true);
+      this.move_block();
+    }
+  },
+  pause: function() {
+    if (this.started()) {
+      this.started(false);
+    }
+    else this.start();
+  },
   set_next_block: function() {
     
     var block_output = '';
@@ -110,18 +123,11 @@ Board.prototype = {
   move_block: function() {
     var self = this;
     this.down();
-    if (!this.game_over()) {
+    if (!this.game_over() && this.started()) {
       setTimeout(function(){
         self.move_block();
       }, self.speed());
     }
-  },
-  start: function(type) {
-    if (typeof type == "undefined") {
-      type = Math.floor(Math.random()*7);
-    }
-    this.player().add_block(type,0,5);
-    this.render(this.player().board.block);
   },
   drop: function() {
 
