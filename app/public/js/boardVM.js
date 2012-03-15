@@ -41,6 +41,7 @@ function Board(options) {
   this.player = ko.observable(options.player);
   this.game_over = ko.observable(false);
   this.speed = ko.observable(300);
+  this.next_block = ko.observable(null);
   this.width = ko.observable(options.width || 12);
   this.height = ko.observable(options.height || 22);
   this.rows = ko.observableArray(multi_array([this.height(), this.width()], function() {
@@ -63,6 +64,9 @@ Board.prototype = {
       }
     }
   },
+  set_next_block: function() {
+    this.next_block(this.player().next_block);
+  },
   move_block: function() {
     var self = this;
     this.down();
@@ -76,7 +80,7 @@ Board.prototype = {
     if (typeof type == "undefined") {
       type = Math.floor(Math.random()*7);
     }
-    this.player().add_block(type,0,7);
+    this.player().add_block(type,0,5);
     this.render(this.player().board.block);
   },
   down: function() {
@@ -96,6 +100,11 @@ Board.prototype = {
     this.render(this.player().board.block);
   },
   render: function(block) {
+    
+    if (this.next_block() !== this.player().next_block) {
+      this.set_next_block();
+    }
+    
     var block_rows;
     var board_rows = this.player().board.rows;
     var rows = this.rows();
@@ -107,7 +116,7 @@ Board.prototype = {
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
         on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
-        if (on && y < 3) {
+        if (on && y < 2) {
           console.log(this.player());
           this.player().game_over = true;
           this.game_over(true);
