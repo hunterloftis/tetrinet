@@ -1,3 +1,5 @@
+var radio = require('radio');
+
 var utils = require('./utils');
 var Player = require('./player');
 

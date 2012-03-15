@@ -1,5 +1,6 @@
 var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black', 'yellow'];
 
+var radio = require('radio');
 
 /**
  * individual blocks in grid

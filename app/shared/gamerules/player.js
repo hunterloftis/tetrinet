@@ -1,4 +1,5 @@
 var _ = require('underscore')._;
+var radio = require('radio');
 
 var Board = require('./board');
 var Block = require('./block');
