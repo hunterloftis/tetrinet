@@ -23,43 +23,15 @@ append scripts
       var lastkeypress = 0;
       var ts = new Date().getTime();
       var timesince = ts - lastkeypress;
-      var should_trigger = (timesince > 50);
+      var should_trigger = (timesince > 10);
 
       $("body").keydown(function(e) {
         if(should_trigger) {
 
           switch(e.keyCode) {
-            // 1
-            case 49:
-              BoardVM.start(0);
-              break;
-            // 2
-            case 50:
-              BoardVM.start(1);
-              break;
-            // 3
-            case 51:
-              BoardVM.start(2);
-              break;
-            // 4
-            case 52:
-              BoardVM.start(3);
-              break;
-            // 5
-            case 53:
-              BoardVM.start(4);
-              break;
-            // 6
-            case 54:
-              BoardVM.start(5);
-              break;
-            // 7
-            case 55:
-              BoardVM.start(6);
-              break;
             // space
             case 32:
-              BoardVM.start();
+              BoardVM.drop();
               break;
             // left
             case 37:
@@ -103,6 +75,11 @@ append scripts
 
 
 block content
+  #score 
+    p.current SCORE: 
+      span(data-bind="html:score")
+    p.high HIGH SCORE: 
+      span(data-bind="html:high_score")
   #board(data-bind="foreach:rows")
     #next_block(data-bind="html:$parent.next_block")
     #game_over(data-bind="visible:$parent.game_over") 

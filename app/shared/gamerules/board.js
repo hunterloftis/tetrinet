@@ -1,5 +1,6 @@
 var utils = require('./utils');
 var Block = require('./block');
+var radio = require('radio');
 
 module.exports = Board;
 
@@ -25,14 +26,14 @@ Board.prototype = {
     var y = this.rows.length;
     var filled;
     var unfilled = [];
-    var any_completed = false;
+    var num_completed = 0;
     while(y--) {
       filled = 0;
       for (var x = 0; x < this.rows[y].length; x++) {
         if (this.rows[y][x] !== ' ') filled++;
       }
       if (filled === this.rows[y].length) {
-        any_completed = true;
+        num_completed++;
       }
       else {
         unfilled.unshift(this.rows[y]);
@@ -43,7 +44,8 @@ Board.prototype = {
       unfilled.unshift(new_row);
     }
     this.rows = unfilled;
-    return any_completed;
+    if (num_completed > 0) radio('player.score').broadcast(num_completed); 
+    return num_completed > 0;
   },
   is_dead: function() {
     // Check if we've reached the top
