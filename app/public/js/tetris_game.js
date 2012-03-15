@@ -632,6 +632,7 @@ function Player(options) {
   _.extend(this, options);
   this.board = new Board();
   this.game_over = false;
+  this.score = 0;
   this.next_block = Math.floor(Math.random()*7);
 }
 
@@ -654,8 +655,10 @@ Player.prototype = {
     }
     else {
       this.board.apply_block();
-      if (this.board.check_rows()) {
-        radio('player.update').broadcast(this);
+      var cleared = this.board.check_rows();
+      if (cleared > 0) {
+        radio('player.line_cleared').broadcast(this);
+        this.update_score(cleared * cleared);
       }
       if (!this.game_over) {
         this.add_block(this.next_block, 0, 5);
@@ -663,6 +666,10 @@ Player.prototype = {
       }
       return false;
     }
+  },
+  update_score: function(delta) {
+    this.score += delta;
+    radio('player.score_updated').broadcast(this);
   },
   shift: function(dy, dx) {
     if (this.board.block) {
@@ -1762,8 +1769,7 @@ Board.prototype = {
       unfilled.unshift(new_row);
     }
     this.rows = unfilled;
-    if (num_completed > 0) radio('player.score').broadcast(num_completed); 
-    return num_completed > 0;
+    return num_completed;
   },
   is_dead: function() {
     // Check if we've reached the top

@@ -56,12 +56,13 @@ function Board(options) {
   }));
 
   // Events
-  radio('player.update').subscribe([function() {
+  radio('player.line_cleared').subscribe([function(player) {
     this.render();
   }, this]);
 
-  radio('player.score').subscribe([function(score) {
-    
+  radio('player.score_updated').subscribe([function(player) {
+    var score = player.score;
+
     // set score observable
     this.score(this.score()+(score*score));
 
