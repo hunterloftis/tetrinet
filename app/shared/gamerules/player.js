@@ -10,6 +10,7 @@ function Player(options) {
   this.id = 'someuuid';
   _.extend(this, options);
   this.board = new Board();
+  this.game_over = false;
 }
 
 Player.prototype = {
@@ -32,6 +33,10 @@ Player.prototype = {
       this.board.apply_block();
       if (this.board.check_rows()) {
         radio('player.update').broadcast(this);
+      }
+      if (!this.game_over) {
+        console.log("player object game over", this.game_over);
+        this.add_block(Math.floor(Math.random()*7), 0, 7);
       }
       return false;
     }

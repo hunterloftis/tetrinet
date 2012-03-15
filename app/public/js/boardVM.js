@@ -39,6 +39,8 @@ function Board(options) {
   var multi_array = require('./utils').multi_array;
 
   this.player = ko.observable(options.player);
+  this.game_over = ko.observable(false);
+  this.speed = ko.observable(300);
   this.width = ko.observable(options.width || 12);
   this.height = ko.observable(options.height || 22);
   this.rows = ko.observableArray(multi_array([this.height(), this.width()], function() {
@@ -57,6 +59,15 @@ Board.prototype = {
       for(var c = 0; c < this.height(); c++) {
         rows[c][r].on(false);
       }
+    }
+  },
+  move_block: function() {
+    var self = this;
+    this.down();
+    if (!this.game_over()) {
+      setTimeout(function(){
+        self.move_block();
+      }, self.speed());
     }
   },
   start: function(type) {
@@ -94,11 +105,17 @@ Board.prototype = {
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
         on = (board_rows[y][x] !== ' ' && board_rows[y][x] !== '.');
+        if (on && y < 3) {
+          console.log(this.player());
+          this.player().game_over = true;
+          this.game_over(true);
+          console.log("Game Over");
+        }
         rows[y][x].on(on);
       }
     }
     
-    if (block) {
+    if (block && !this.game_over()) {
       block_rows = block.get_rows();
 
       // Render the block

@@ -941,6 +941,24 @@ button.active:hover,
   -o-border-radius: 3px;
   border-radius: 3px;
   margin: 30px auto;
+  position: relative;
+}
+#board #game_over {
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 10%;
+  right: 10%;
+  background: rgba(0,0,0,0.05);
+  color: #f00;
+  font-size: 30px;
+  text-align: center;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  padding-top: 50px;
 }
 #board .block {
   -webkit-transform-style: preserve-3d;

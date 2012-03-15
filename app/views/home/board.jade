@@ -18,12 +18,12 @@ append scripts
     $(function(){
       ko.applyBindings(BoardVM);
 
+      BoardVM.move_block();
+
       var lastkeypress = 0;
       var ts = new Date().getTime();
       var timesince = ts - lastkeypress;
       var should_trigger = (timesince > 50);
-
-      console.log("key pressed", timesince)
 
       $("body").keydown(function(e) {
         if(should_trigger) {
@@ -104,6 +104,7 @@ append scripts
 
 block content
   #board(data-bind="foreach:rows")
+    #game_over(data-bind="visible:$parent.game_over") GAME OVER
     // ko foreach:$data
     .block(data-bind="css:{on:on, red:(color() == 'red'), blue:(color() == 'blue'), green:(color() == 'green'), purple:(color() == 'purple'), orange:(color() == 'orange'), yellow:(color() == 'yellow')}")
     // /ko
