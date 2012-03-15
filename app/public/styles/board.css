@@ -943,13 +943,18 @@ button.active:hover,
   margin: 30px auto;
   position: relative;
 }
+#board #next_block {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  margin-right: 10px;
+}
 #board #game_over {
   position: absolute;
-  top: 25%;
-  bottom: 25%;
+  top: 35%;
   left: 10%;
   right: 10%;
-  background: rgba(0,0,0,0.05);
+  background: rgba(0,0,0,0.07);
   color: #f00;
   font-size: 30px;
   text-align: center;
@@ -958,7 +963,7 @@ button.active:hover,
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
-  padding-top: 50px;
+  padding: 20px 0;
 }
 #board .block {
   -webkit-transform-style: preserve-3d;

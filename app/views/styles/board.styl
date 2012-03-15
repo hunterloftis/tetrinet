@@ -2,6 +2,7 @@
 @import 'animations'
 @import 'library'
 
+
 #board
   width 339px
   height 618px
@@ -11,18 +12,23 @@
   margin 30px auto
   position relative
 
+  #next_block
+    position absolute
+    top 0
+    right 100%
+    margin-right 10px
+
   #game_over
     position absolute
-    top 25%
-    bottom 25%
+    top 35%
     left 10%
     right 10%
-    background rgba(0,0,0,0.05)
+    background rgba(0,0,0,0.07)
     color red
     font-size 30px
     text-align center
     border-radius 3px
-    padding-top 50px
+    padding 20px 0
 
   .block
     -webkit-transform-style preserve-3d

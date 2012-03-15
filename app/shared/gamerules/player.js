@@ -11,7 +11,9 @@ function Player(options) {
   _.extend(this, options);
   this.board = new Board();
   this.game_over = false;
+  this.next_block = Math.floor(Math.random()*7);
 }
+
 
 Player.prototype = {
   add_block: function(type, row, column) {
@@ -36,7 +38,8 @@ Player.prototype = {
       }
       if (!this.game_over) {
         console.log("player object game over", this.game_over);
-        this.add_block(Math.floor(Math.random()*7), 0, 7);
+        this.add_block(this.next_block, 0, 5);
+        this.next_block = Math.floor(Math.random()*7);
       }
       return false;
     }
