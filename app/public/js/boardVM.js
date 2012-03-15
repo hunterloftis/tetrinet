@@ -48,7 +48,9 @@ function Board(options) {
   }));
 
   // Events
-  radio('player.update').subscribe([this.render, this]);
+  radio('player.update').subscribe([function() {
+    this.render();
+  }, this]);
 
 }
 
