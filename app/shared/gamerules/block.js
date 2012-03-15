@@ -85,6 +85,12 @@ Block.prototype = {
   get_rows: function() {
     return this.type[this.rotation];
   },
+  drop: function(board) {
+    while (this.fits(board, this.y + 1, this.x)) {
+      this.y++;
+    }
+    return true;
+  },
   rotate: function(board, counter) {
     if (this.rotates) {
 

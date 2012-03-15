@@ -716,6 +716,9 @@ Player.prototype = {
   rotate_right: function() {
     if (this.board.block) return this.board.block.rotate(this.board.rows, false);
   },
+  drop: function() {
+    if (this.board.block) return this.board.block.drop(this.board.rows);
+  },
   create_game: function(user_id) {
     // End any games the user is currently running
     // Does the user have permission to create a game?
@@ -1885,6 +1888,12 @@ function Block(type_index, options) {
 Block.prototype = {
   get_rows: function() {
     return this.type[this.rotation];
+  },
+  drop: function(board) {
+    while (this.fits(board, this.y + 1, this.x)) {
+      this.y++;
+    }
+    return true;
   },
   rotate: function(board, counter) {
     if (this.rotates) {

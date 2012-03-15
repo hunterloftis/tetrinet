@@ -147,6 +147,10 @@ Board.prototype = {
     this.player().rotate_left();
     this.render(this.player().board.block);
   },
+  drop: function() {
+    this.player().drop();
+    this.render(this.player().board.block);
+  },
   render: function(block) {
     
     if (this.next_block() !== this.player().next_block) {
