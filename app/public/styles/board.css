@@ -936,7 +936,7 @@ button.active:hover,
   left: 0;
   width: 200px;
   font-size: 16px;
-  padding: 20px;
+  padding: 10px;
   margin: 20px;
   text-align: center;
   background: rgba(255,255,255,0.50);
@@ -949,9 +949,9 @@ button.active:hover,
   font-style: italic;
 }
 #board {
-  width: 387px;
-  height: 707px;
   border: 1px solid #999;
+  width: 339px;
+  height: 618px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -1001,8 +1001,8 @@ button.active:hover,
 }
 #board .block {
   -webkit-transform-style: preserve-3d;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   margin: 1px;
   float: left;
   -webkit-border-radius: 3px;
