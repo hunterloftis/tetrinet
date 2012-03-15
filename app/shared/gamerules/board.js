@@ -25,13 +25,14 @@ Board.prototype = {
     var y = this.rows.length;
     var filled;
     var unfilled = [];
+    var any_completed = false;
     while(y--) {
       filled = 0;
       for (var x = 0; x < this.rows[y].length; x++) {
         if (this.rows[y][x] !== ' ') filled++;
       }
       if (filled === this.rows[y].length) {
-        
+        any_completed = true;
       }
       else {
         unfilled.unshift(this.rows[y]);
@@ -39,9 +40,10 @@ Board.prototype = {
     }
     while(unfilled.length < this.rows.length) {
       var new_row = utils.multi_array([this.width], ' ');
-      unfilled.unshift(); // TODO
+      unfilled.unshift(new_row);
     }
-
+    this.rows = unfilled;
+    return any_completed;
   },
   is_dead: function() {
     // Check if we've reached the top
