@@ -128,9 +128,6 @@ Board.prototype = {
       }, self.speed());
     }
   },
-  drop: function() {
-
-  },
   down: function() {
     this.player().shift_down();
     this.render(this.player().board.block);
