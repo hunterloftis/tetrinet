@@ -16,9 +16,9 @@ module.exports = Tetris;
 Tetris.prototype = {
   reset: function() {
     this.running = false;
-    this.speed = 500;
+    this.speed = 300;
     this.speed_interval = 10000;
-    this.speed_multiplier = 0.99;
+    this.speed_multiplier = 0.997;
     this.next_speed = 0;
     this.min_speed = 100;
     this.game_over = true;
