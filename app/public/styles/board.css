@@ -943,6 +943,10 @@ button.active:hover,
 #overlay button {
   font-size: 35px;
 }
+#overlay button span {
+  display: block;
+  font-size: 12px;
+}
 #score {
   position: absolute;
   top: 0;

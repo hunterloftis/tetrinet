@@ -354,16 +354,23 @@ function Tetris() {
   })];
   this.running = false;
   this.speed = 500;
+  this.game_over = true;
 }
 
 module.exports = Tetris;
 
 Tetris.prototype = {
   start: function(player) {
-    console.log("game started");
+    if (this.game_over) this.clear();
     this.running = true;
     radio('game.start').broadcast();
     this.tick();
+  },
+  clear: function() {
+    var i = this.players.length;
+    while (i--) {
+      this.players[i].clear();
+    }
   },
   stop: function(player) {
     this.running = false;
@@ -376,19 +383,9 @@ Tetris.prototype = {
   tick: function() {
     if (this.running) {
       var self = this;
-      var i = this.players.length;
-      var player;
-      var still_in_game = 0;
-      // Loop all players
-      while (i--) {
-        player = this.players[i];
-        player.shift_down();
-        if (typeof(player.board.block) === 'undefined') {
-          player.add_next(player.board);
-        }
-        if (!player.game_over) still_in_game++;
-      }
-      if (still_in_game === 0) {
+      this.tick_players();
+      if (this.players_in_game() === 0) {
+        this.game_over = true;
         this.stop();
       }
       if (this.speed > 100) this.speed--;
@@ -397,6 +394,20 @@ Tetris.prototype = {
         self.tick();
       }, this.speed);
     }
+  },
+  tick_players: function() {
+    var i = this.players.length;
+    while (i--) {
+      this.players[i].tick();
+    }
+  },
+  players_in_game: function() {
+    var i = this.players.length;
+    var in_game = 0;
+    while (i--) {
+      if (!this.players[i].game_over) in_game++;
+    }
+    return in_game;
   },
   test_render: function() {
     var grid = utils.clone_array(this.players[0].board.rows);
@@ -716,6 +727,18 @@ Player.prototype = {
   toggle: function() {
     this.game.toggle(this);
   },
+  tick: function() {
+    this.shift_down();
+    if (typeof(this.board.block) === 'undefined') {
+      this.add_next(this.board);
+    }
+  },
+  clear: function() {
+    this.board.empty();
+    this.score = 0;
+    this.select_next();
+    this.game_over = false;
+  },
   add_block: function(type, row, column) {
     if (typeof(this.board.block) === 'undefined') {
       var new_block = new Block(type, {
@@ -727,10 +750,13 @@ Player.prototype = {
     }
     return false;
   },
-  add_next: function(board) {
-    this.add_block(this.next_block, 0, 5);
+  select_next: function() {
     this.next_block = Math.floor(Math.random()*7);
     radio('player.next_block').broadcast(this);
+  },
+  add_next: function(board) {
+    this.add_block(this.next_block, 0, 5);
+    this.select_next();
   },
   shift_down: function() {
     if (this.shift(1,0)) {

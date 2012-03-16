@@ -82,6 +82,7 @@ function Board(options) {
   }, this]);
 
   radio('game.start').subscribe([function(player) {
+    this.game_over(false);
     this.started(true);
     this.render();
   }, this]);

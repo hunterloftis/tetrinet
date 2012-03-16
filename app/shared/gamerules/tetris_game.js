@@ -10,16 +10,23 @@ function Tetris() {
   })];
   this.running = false;
   this.speed = 500;
+  this.game_over = true;
 }
 
 module.exports = Tetris;
 
 Tetris.prototype = {
   start: function(player) {
-    console.log("game started");
+    if (this.game_over) this.clear();
     this.running = true;
     radio('game.start').broadcast();
     this.tick();
+  },
+  clear: function() {
+    var i = this.players.length;
+    while (i--) {
+      this.players[i].clear();
+    }
   },
   stop: function(player) {
     this.running = false;
@@ -32,19 +39,9 @@ Tetris.prototype = {
   tick: function() {
     if (this.running) {
       var self = this;
-      var i = this.players.length;
-      var player;
-      var still_in_game = 0;
-      // Loop all players
-      while (i--) {
-        player = this.players[i];
-        player.shift_down();
-        if (typeof(player.board.block) === 'undefined') {
-          player.add_next(player.board);
-        }
-        if (!player.game_over) still_in_game++;
-      }
-      if (still_in_game === 0) {
+      this.tick_players();
+      if (this.players_in_game() === 0) {
+        this.game_over = true;
         this.stop();
       }
       if (this.speed > 100) this.speed--;
@@ -53,6 +50,20 @@ Tetris.prototype = {
         self.tick();
       }, this.speed);
     }
+  },
+  tick_players: function() {
+    var i = this.players.length;
+    while (i--) {
+      this.players[i].tick();
+    }
+  },
+  players_in_game: function() {
+    var i = this.players.length;
+    var in_game = 0;
+    while (i--) {
+      if (!this.players[i].game_over) in_game++;
+    }
+    return in_game;
   },
   test_render: function() {
     var grid = utils.clone_array(this.players[0].board.rows);
