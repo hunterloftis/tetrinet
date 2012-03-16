@@ -2035,6 +2035,7 @@ Tetris.prototype = {
     if (this.game_over) this.clear();
     this.game_over = false;
     this.running = true;
+    this.next_speed = new Date().getTime() + this.speed_interval;
     radio('game.start').broadcast();
     this.tick();
   },
