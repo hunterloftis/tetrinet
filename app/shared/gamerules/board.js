@@ -44,8 +44,7 @@ Board.prototype = {
       unfilled.unshift(new_row);
     }
     this.rows = unfilled;
-    if (num_completed > 0) radio('player.score').broadcast(num_completed); 
-    return num_completed > 0;
+    return num_completed;
   },
   is_dead: function() {
     // Check if we've reached the top

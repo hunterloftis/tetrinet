@@ -1029,6 +1029,24 @@ button.active:hover,
   border: 1px solid #555;
   background: #333;
   -webkit-transform-style: preserve-3d;
+  border: 1px solid #111;
+  position: relative;
+}
+#board #next_block div:after,
+#board .block.on:after {
+  pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  border-top: 1px solid #999;
 }
 #board #next_block div.blank,
 #board .block.on.blank {
