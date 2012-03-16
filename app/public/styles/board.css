@@ -931,7 +931,7 @@ button.active:hover,
 }
 #overlay {
   position: absolute;
-  z-index: 999;
+  z-index: 998;
   top: 0;
   left: 0;
   right: 0;
@@ -988,9 +988,8 @@ button.active:hover,
   top: 35%;
   left: 10%;
   right: 10%;
-  background: rgba(0,0,0,0.10);
   color: #eee;
-  font-size: 24px;
+  font-size: 30px;
   text-align: center;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -998,6 +997,7 @@ button.active:hover,
   -o-border-radius: 3px;
   border-radius: 3px;
   padding: 20px 0;
+  z-index: 999;
 }
 #board #next_block {
   position: absolute;
