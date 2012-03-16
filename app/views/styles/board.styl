@@ -3,13 +3,21 @@
 @import 'library'
 
 // block colors
-red = #811
-green = #181
-blue = #118
-purple = #818
-orange = #f28d28
-yellow = #f1f218
-black = #333
+// red = #811
+// green = #181
+// blue = #118
+// purple = #818
+// orange = #f28d28
+// yellow = #00d6ea
+// black = #333
+
+red = #dc322f
+green = #859900
+blue = #268bd2
+purple = #6c71c4
+orange = #cb4b16
+yellow = #b58900
+black = #d33682
 
 #overlay
   position absolute
@@ -18,7 +26,7 @@ black = #333
   left 0
   right 0
   bottom 0
-  background rgba(0,0,0,0.7)
+  background rgba(0,0,0,0.9)
   text-align center
   padding 50px
   button
@@ -37,7 +45,6 @@ black = #333
   padding 10px
   margin 20px
   text-align center
-  background rgba(255,255,255,0.5)
   .current
     font-size 30px
   .high
@@ -46,21 +53,19 @@ black = #333
 
 
 #board
-  border 1px solid #999
+  border 1px solid #ccc
+  border-bottom 3px solid #111
   width 339px
-  height 618px
-  border-radius 3px
-  margin 30px auto
+  height 620px
+  margin 10px auto
   position relative
-  box-shadow 0 0 25px -10px #000
-  background rgba(255,255,255,0.5)
+  background #FFF
 
   #game_over
     position absolute
     top 35%
     left 10%
     right 10%
-    //background rgba(0,0,0,0.1)
     color #eee
     font-size 30px
     text-align center
@@ -86,12 +91,11 @@ black = #333
     margin 1px
 
   #next_block div, .block.on
-    emboss(3px)
-    border 1px solid #555
-    border-radius 3px
+    //emboss(3px)
+    //border 1px solid #555
+    //border-radius 3px
     background black
     //animation pop 100ms ease-out
-    -webkit-transform-style preserve-3d
     &.blank
       background none
       border none
@@ -111,3 +115,5 @@ black = #333
       background yellow
     &.black
       background black
+    &.dark
+      background #333
