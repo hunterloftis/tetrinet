@@ -10,6 +10,10 @@ function Tetris() {
   })];
   this.running = false;
   this.speed = 500;
+  this.speed_interval = 1000;
+  this.speed_delta = -10;
+  this.next_speed = 0;
+  this.min_speed = 100;
   this.game_over = true;
 }
 
@@ -45,7 +49,12 @@ Tetris.prototype = {
         this.game_over = true;
         this.stop();
       }
-      if (this.speed > 100) this.speed--;
+      var now = new Date().getTime();
+      if (now > this.next_speed && this.speed > this.min_speed) {
+        this.speed += this.speed_delta;
+        this.next_speed = now + this.speed_interval;
+      }
+      if (this.speed > 100) this.speed --;
       radio('game.tick').broadcast();
       setTimeout(function() {
         self.tick();
