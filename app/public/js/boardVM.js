@@ -124,9 +124,6 @@ Board.prototype = {
 
     this.next_block(block_output);
   },
-  drop: function() {
-
-  },
   down: function() {
     this.player().shift_down();
     this.render(this.player().board.block);
