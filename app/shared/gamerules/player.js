@@ -98,7 +98,12 @@ Player.prototype = {
     if (this.board.block) return this.board.block.rotate(this.board.rows, false);
   },
   drop: function() {
-    if (this.board.block) return this.board.block.drop(this.board.rows);
+    if (this.board.block) {
+      var result = this.board.block.drop(this.board.rows);
+      radio('player.drop').broadcast(this);
+      this.board.apply_block();
+      return result;
+    }
   },
   create_game: function(user_id) {
     // End any games the user is currently running

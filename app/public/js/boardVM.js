@@ -63,6 +63,10 @@ function Board(options) {
     this.set_next_block();
   }, this]);
 
+  radio('player.drop').subscribe([function(player) {
+    this.render();
+  }, this]);
+
   radio('game.start').subscribe([function(player) {
     this.game_over(false);
     this.started(true);

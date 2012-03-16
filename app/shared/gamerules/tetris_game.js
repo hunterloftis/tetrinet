@@ -11,7 +11,7 @@ function Tetris() {
   this.running = false;
   this.speed = 500;
   this.speed_interval = 10000;
-  this.speed_delta = -5;
+  this.speed_multiplier = 0.99;
   this.next_speed = 0;
   this.min_speed = 100;
   this.game_over = true;
@@ -24,7 +24,7 @@ Tetris.prototype = {
     if (this.game_over) this.clear();
     this.game_over = false;
     this.running = true;
-    this.next_speed = new Date().getTime() + this.speed_interval;
+    this.slow_down();
     radio('game.start').broadcast();
     this.tick();
   },
@@ -52,8 +52,7 @@ Tetris.prototype = {
       }
       var now = new Date().getTime();
       if (now > this.next_speed && this.speed > this.min_speed) {
-        this.speed += this.speed_delta;
-        this.next_speed = now + this.speed_interval;
+        this.slow_down();
       }
       if (this.speed > 100) this.speed --;
       radio('game.tick').broadcast();
@@ -61,6 +60,11 @@ Tetris.prototype = {
         self.tick();
       }, this.speed);
     }
+  },
+  slow_down: function() {
+    this.speed *= this.speed_multiplier;
+    this.next_speed = new Date().getTime() + this.speed_interval;
+    radio('game.speed').broadcast();
   },
   tick_players: function() {
     var i = this.players.length;
