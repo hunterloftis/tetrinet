@@ -8,27 +8,31 @@ function Tetris() {
     name: 'Test player',
     game: this
   })];
-  this.running = false;
-  this.speed = 500;
-  this.speed_interval = 10000;
-  this.speed_multiplier = 0.99;
-  this.next_speed = 0;
-  this.min_speed = 100;
-  this.game_over = true;
+  this.reset();
 }
 
 module.exports = Tetris;
 
 Tetris.prototype = {
+  reset: function() {
+    this.running = false;
+    this.speed = 300;
+    this.speed_interval = 10000;
+    this.speed_multiplier = 0.997;
+    this.next_speed = 0;
+    this.min_speed = 100;
+    this.game_over = true;
+    this.clear_players();
+  },
   start: function(player) {
-    if (this.game_over) this.clear();
+    if (this.game_over) this.reset();
     this.game_over = false;
     this.running = true;
     this.slow_down();
     radio('game.start').broadcast();
     this.tick();
   },
-  clear: function() {
+  clear_players: function() {
     var i = this.players.length;
     while (i--) {
       this.players[i].clear();
