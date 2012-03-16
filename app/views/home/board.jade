@@ -27,9 +27,10 @@ append scripts
         if(should_trigger) {
 
           switch(e.keyCode) {
-            // P
+            // P, Enter
             case 80:
-              BoardVM.pause();
+            case 13:
+              BoardVM.toggle();
               break;
             // space
             case 32:
@@ -57,23 +58,6 @@ append scripts
         lastkeypress = ts;
       });
     })
-
-
-    function randomBlock() {
-      var rows = BoardVM.rows();
-      var random_row = Math.floor(Math.random()*(BoardVM.height()));
-      var random_col = Math.floor(Math.random()*(BoardVM.width()));
-      var block = rows[random_row][random_col];
-      var status = block.on();
-
-      block.random_color();
-      block.on(!status);
-
-      setTimeout(function(){
-        if (started) randomBlock();
-      }, 1)
-      
-    }
 
 
 block content

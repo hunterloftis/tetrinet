@@ -23,6 +23,9 @@ Player.prototype = {
   stop: function() {
     this.game.stop(this);
   },
+  toggle: function() {
+    this.game.toggle(this);
+  },
   add_block: function(type, row, column) {
     if (typeof(this.board.block) === 'undefined') {
       var new_block = new Block(type, {
@@ -34,6 +37,11 @@ Player.prototype = {
     }
     return false;
   },
+  add_next: function(board) {
+    this.add_block(this.next_block, 0, 5);
+    this.next_block = Math.floor(Math.random()*7);
+    radio('player.next_block').broadcast(this);
+  },
   shift_down: function() {
     if (this.shift(1,0)) {
       return true;
@@ -44,10 +52,6 @@ Player.prototype = {
       if (cleared > 0) {
         radio('player.line_cleared').broadcast(this);
         this.update_score(cleared * cleared);
-      }
-      if (!this.game_over) {
-        this.add_block(this.next_block, 0, 5);
-        this.next_block = Math.floor(Math.random()*7);
       }
       return false;
     }

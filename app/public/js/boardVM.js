@@ -77,6 +77,10 @@ function Board(options) {
     }
   }, this]);
 
+  radio('player.next_block').subscribe([function(player) {
+    this.set_next_block();
+  }, this]);
+
   radio('game.start').subscribe([function(player) {
     this.started(true);
     this.render();
@@ -104,8 +108,8 @@ Board.prototype = {
   start: function() {
     this.player().start();
   },
-  pause: function() {
-    this.player().stop();
+  toggle: function() {
+    this.player().toggle();
   },
   set_next_block: function() {
     
@@ -150,12 +154,10 @@ Board.prototype = {
     this.player().drop();
     this.render(this.player().board.block);
   },
-  render: function(block) {
+  render: function() {
     
-    if (this.next_block() !== this.player().next_block) {
-      this.set_next_block();
-    }
-    
+    var block = this.player().board.block;
+
     var block_rows;
     var board_rows = this.player().board.rows;
     var rows = this.rows();
