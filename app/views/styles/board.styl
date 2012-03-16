@@ -79,17 +79,19 @@ black = #333
     width 26px
     height 26px
     margin 1px
-    border-radius 3px
 
   #next_block div, .block.on
+    emboss(3px)
     border 1px solid #555
+    border-radius 3px
     background black
     //animation pop 100ms ease-out
     -webkit-transform-style preserve-3d
-    emboss(3px)
     &.blank
       background none
       border none
+      &:after
+        display none
     &.red
       background red
     &.green

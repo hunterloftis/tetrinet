@@ -92,7 +92,7 @@ inset(radius = 15px)
     background rgba(0,0,0,0.2)
 
 bevel(radius = 15px)
-  border 1px solid #333
+  position relative
   &:after
     pointer-events none
     content ""
@@ -105,7 +105,6 @@ bevel(radius = 15px)
     border-bottom 1px solid #555
 
 emboss(radius = 15px)
-  border 1px solid #111
   position relative
   &:after
     pointer-events none
@@ -116,7 +115,7 @@ emboss(radius = 15px)
     left 0
     bottom 0 
     border-radius radius
-    border-top 1px solid #999
+    border-top 1px solid rgba(255,255,255,0.8)
 
 button(radius = 5px)
   color #aaa

@@ -874,7 +874,6 @@ button,
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#555', endColorstr='#2e2e2e',GradientType=0 );
   background: linear-gradient(top, #555 0%, #555 100%);
   background: /* W3C */;
-  border: 1px solid #111;
   position: relative;
 }
 button:after,
@@ -891,7 +890,7 @@ button:after,
   -ms-border-radius: 5px;
   -o-border-radius: 5px;
   border-radius: 5px;
-  border-top: 1px solid #999;
+  border-top: 1px solid rgba(255,255,255,0.80);
 }
 button:hover,
 .button:hover,
@@ -908,7 +907,7 @@ button.active,
   -o-box-shadow: 0 2px 5px rgba(0,0,0,0.50) inset;
   box-shadow: 0 2px 5px rgba(0,0,0,0.50) inset;
   color: #eee;
-  border: 1px solid #333;
+  position: relative;
 }
 button.active:after,
 .button.active:after {
@@ -1018,19 +1017,18 @@ button.active:hover,
   width: 26px;
   height: 26px;
   margin: 1px;
+}
+#board #next_block div,
+#board .block.on {
+  position: relative;
+  border: 1px solid #555;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
-}
-#board #next_block div,
-#board .block.on {
-  border: 1px solid #555;
   background: #333;
   -webkit-transform-style: preserve-3d;
-  border: 1px solid #111;
-  position: relative;
 }
 #board #next_block div:after,
 #board .block.on:after {
@@ -1046,12 +1044,16 @@ button.active:hover,
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
-  border-top: 1px solid #999;
+  border-top: 1px solid rgba(255,255,255,0.80);
 }
 #board #next_block div.blank,
 #board .block.on.blank {
   background: none;
   border: none;
+}
+#board #next_block div.blank:after,
+#board .block.on.blank:after {
+  display: none;
 }
 #board #next_block div.red,
 #board .block.on.red {
