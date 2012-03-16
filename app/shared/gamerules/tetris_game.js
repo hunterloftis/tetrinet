@@ -58,7 +58,6 @@ Tetris.prototype = {
       if (now > this.next_speed && this.speed > this.min_speed) {
         this.slow_down();
       }
-      if (this.speed > 100) this.speed --;
       radio('game.tick').broadcast();
       setTimeout(function() {
         self.tick();
