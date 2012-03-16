@@ -980,23 +980,6 @@ button.active:hover,
   box-shadow: 0 0 25px -10px #000;
   background: rgba(255,255,255,0.50);
 }
-#board #next_block {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  width: 125px;
-  margin-left: 20px;
-}
-#board #next_block div {
-  width: 25px;
-  height: 25px;
-  margin: 1px;
-  display: inline-block;
-  zoom: 1;
-  *display: inline;
-  vertical-align: bottom;
-  bottom: 0;
-}
 #board #game_over {
   position: absolute;
   top: 35%;
@@ -1013,21 +996,62 @@ button.active:hover,
   border-radius: 3px;
   padding: 20px 0;
 }
+#board #next_block {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 125px;
+  margin-left: 20px;
+}
+#board #next_block div {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  vertical-align: bottom;
+  bottom: 0;
+}
 #board .block {
-  -webkit-transform-style: preserve-3d;
+  float: left;
+}
+#board #next_block div,
+#board .block {
   width: 26px;
   height: 26px;
   margin: 1px;
-  float: left;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
 }
+#board #next_block div,
 #board .block.on {
   border: 1px solid #555;
   background: #333;
+  -webkit-transform-style: preserve-3d;
+  border: 1px solid #111;
+  position: relative;
+}
+#board #next_block div:after,
+#board .block.on:after {
+  pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  border-top: 1px solid #999;
+}
+#board #next_block div.blank,
+#board .block.on.blank {
+  background: none;
+  border: none;
 }
 #board #next_block div.red,
 #board .block.on.red {

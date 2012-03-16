@@ -51,18 +51,6 @@ black = #333
   box-shadow 0 0 25px -10px #000
   background rgba(255,255,255,0.5)
 
-  #next_block
-    position absolute
-    top 0
-    left 100%
-    width 125px
-    margin-left 20px
-    div
-      width 25px
-      height 25px
-      margin 1px
-      inline-block()
-
   #game_over
     position absolute
     top 35%
@@ -75,20 +63,33 @@ black = #333
     border-radius 3px
     padding 20px 0
 
+  #next_block
+    position absolute
+    top 0
+    left 100%
+    width 125px
+    margin-left 20px
+    div
+      inline-block()
+
   .block
-    -webkit-transform-style preserve-3d
+    float left      
+
+  #next_block div, .block
     width 26px
     height 26px
     margin 1px
-    float left
     border-radius 3px
-    &.on
-      border 1px solid #555
-      background black
-      //animation pop 100ms ease-out
-      
 
   #next_block div, .block.on
+    border 1px solid #555
+    background black
+    //animation pop 100ms ease-out
+    -webkit-transform-style preserve-3d
+    emboss(3px)
+    &.blank
+      background none
+      border none
     &.red
       background red
     &.green

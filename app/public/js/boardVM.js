@@ -65,7 +65,7 @@ function Board(options) {
     var score = player.score;
 
     // set score observable
-    this.score(this.score()+(score*score));
+    this.score(score);
 
     // change speed
     this.speed(base_speed - (this.score()*speed_multi));
