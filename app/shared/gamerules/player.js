@@ -17,6 +17,12 @@ function Player(options) {
 
 
 Player.prototype = {
+  start: function() {
+    this.game.start(this);
+  },
+  stop: function() {
+    this.game.stop(this);
+  },
   add_block: function(type, row, column) {
     if (typeof(this.board.block) === 'undefined') {
       var new_block = new Block(type, {

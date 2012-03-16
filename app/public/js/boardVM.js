@@ -77,6 +77,16 @@ function Board(options) {
     }
   }, this]);
 
+  radio('game.start').subscribe([function(player) {
+    this.started(true);
+    this.render();
+  }, this]);
+
+  radio('game.tick').subscribe([function(player) {
+    this.started(false);
+    this.render();
+  }, this]);
+
 }
 
 Board.prototype = {
@@ -89,16 +99,10 @@ Board.prototype = {
     }
   },
   start: function() {
-    if (!this.started()) {
-      this.started(true);
-      this.move_block();
-    }
+    this.player().start();
   },
   pause: function() {
-    if (this.started()) {
-      this.started(false);
-    }
-    else this.start();
+    this.player().stop();
   },
   set_next_block: function() {
     
@@ -112,22 +116,13 @@ Board.prototype = {
           block_output += '<div class="'+available_colors[this.player().next_block]+'"></div>';
         }
         else {
-          block_output += '<div class="blank"></div>'; 
+          block_output += '<div class="blank"></div>';
         }
       }
       block_output += '<br>';
     }
 
     this.next_block(block_output);
-  },
-  move_block: function() {
-    var self = this;
-    this.down();
-    if (!this.game_over() && this.started()) {
-      setTimeout(function(){
-        self.move_block();
-      }, self.speed());
-    }
   },
   drop: function() {
 
