@@ -2029,6 +2029,7 @@ module.exports = Tetris;
 Tetris.prototype = {
   start: function(player) {
     if (this.game_over) this.clear();
+    this.game_over = false;
     this.running = true;
     radio('game.start').broadcast();
     this.tick();

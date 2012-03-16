@@ -1,6 +1,4 @@
-var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black', 'yellow'],
-    base_speed = 300,
-    speed_multi = 2;
+var available_colors = ['red', 'green', 'blue', 'purple', 'orange', 'black', 'yellow'];
 
 var radio = require('radio');
 var BlockClass = require('./block');
@@ -19,18 +17,6 @@ function Block(options) {
 
 }
 
-Block.prototype = {
-
-  show: function() {
-    this.on(true);
-  },
-
-  random_color: function() {
-    this.color(available_colors[Math.floor(Math.random() * available_colors.length)]);
-  }
-
-};
-
 
 
 
@@ -48,7 +34,6 @@ function Board(options) {
   this.score = ko.observable(0);
   this.high_score = ko.observable(localStorage.high_score || 0);
   this.game_over = ko.observable(false);
-  this.speed = ko.observable(base_speed);
   this.next_block = ko.observable(null);
   this.width = ko.observable(options.width || 12);
   this.height = ko.observable(options.height || 22);
@@ -66,9 +51,6 @@ function Board(options) {
 
     // set score observable
     this.score(score);
-
-    // change speed
-    this.speed(base_speed - (this.score()*speed_multi));
 
     // set high score
     if (this.score() > this.high_score()) {
