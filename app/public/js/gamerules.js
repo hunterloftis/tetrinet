@@ -735,7 +735,7 @@ Player.prototype = {
   },
   clear: function() {
     this.board.empty();
-    this.score = 0;
+    this.update_score(0);
     this.select_next();
     this.game_over = false;
   },
@@ -767,13 +767,13 @@ Player.prototype = {
       var cleared = this.board.check_rows();
       if (cleared > 0) {
         radio('player.line_cleared').broadcast(this);
-        this.update_score(cleared * cleared);
+        this.update_score(this.score + cleared * cleared);
       }
       return false;
     }
   },
-  update_score: function(delta) {
-    this.score += delta;
+  update_score: function(target) {
+    this.score = target;
     radio('player.score_updated').broadcast(this);
   },
   shift: function(dy, dx) {
