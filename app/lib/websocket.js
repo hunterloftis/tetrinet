@@ -6,17 +6,14 @@ module.exports = function(app) {
   var wss = new WebSocketServer({ port: 4001 });
 
   wss.on('connection', function(ws) {
-    console.log("Got connection");
     app.game.on_client_connection(ws);
 
     ws.on('message', function(data, flags) {
       app.game.on_client_message(data);
-      console.log("Received from client:", data);
     });
   });
 
   wss.on('close', function(ws) {
-    console.log("WS Close");
     app.game.on_client_close(ws);
   });
 

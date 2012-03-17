@@ -347,6 +347,7 @@ var _ = require('underscore')._;
 
 var utils = require('./utils');
 var Player = require('./player');
+var MessageSocket = require('./messagesocket');
 
 function Tetris(options) {
   _(this).extend(options);
@@ -370,30 +371,32 @@ module.exports = Tetris;
 Tetris.prototype = {
   on_client_connection: function(ws) {
     console.log("WS Connected");
-    ws.send("Hi from the game!");
   },
   on_client_message: function(data) {
-    console.log("WD Message:", data);
+    console.log("WS Message:", data);
+    var message = JSON.parse(data);
+    if (message.type === 'request') {
+      console.log("Received request");
+    }
   },
   on_client_close: function(ws) {
     console.log("WS Disconnected");
   },
   connect: function() {
     console.log("Opening websocket connection...");
-    var ws = new WebSocket('ws://localhost:4001');
-    ws.onopen = function() {
+    var ws = this.ws = new MessageSocket('ws://localhost:4001');
+    ws.on('open', function() {
       console.log("Connection established.");
-      ws.send('this is from the client');
-    };
-    ws.onmessage = function(event) {
+    });
+    ws.on('message', function(event) {
       console.log("Message from server:", event.data);
-    };
-    ws.onerror = function() {
+    });
+    ws.on('error', function() {
       console.log("WS error");
-    };
-    ws.onclose = function() {
+    });
+    ws.on('close', function() {
       console.log("WS close");
-    };
+    });
   },
   listen: function() {
 
@@ -409,6 +412,12 @@ Tetris.prototype = {
     this.clear_players();
   },
   start: function(player) {
+    if (this.client) {
+      this.ws.request('game.start', {}, function(err, result) {
+        console.log("RESULT OF game.start:", result);
+      });
+      return;
+    }
     if (this.game_over) this.reset();
     this.game_over = false;
     this.running = true;
@@ -2147,6 +2156,83 @@ Block.prototype = {
 
     // ...yep.
     return true;
+  }
+};
+});
+
+require.define("/messagesocket.js", function (require, module, exports, __dirname, __filename) {
+var _ = require('underscore')._;
+
+module.exports = MessageSocket;
+
+function MessageSocket(uri) {
+  _(this).bindAll();
+
+  this.pending = {};
+  this.ws = new WebSocket(uri);
+  this.ws.onopen = this.onopen;
+  this.ws.onmessage = this.onmessage;
+  this.ws.onerror = this.onerror;
+  this.ws.onclose = this.onclose;
+
+  var noop = function() {};
+  this._handlers = {
+    'open': noop,
+    'message': noop,
+    'error': noop,
+    'close': noop
+  };
+}
+
+MessageSocket.prototype = {
+
+  on: function(event, handler) {
+    this._handlers[event] = handler;
+  },
+
+  enqueue: function(id, callback) {
+    this.pending[id] = callback;
+  },
+
+  send_message: function(type, name, parameters, callback) {
+    var id = Math.floor(Math.random() * 9999999);
+    var data = JSON.stringify({
+      id: id,
+      type: type,
+      name: name,
+      parameters: parameters
+    });
+    this.enqueue(data.id, callback);
+    this.ws.send(data);
+  },
+
+  request: function(name, parameters, callback) {
+    return this.send_message('request', name, parameters, callback);
+  },
+
+  event: function(name, parameters, callback) {
+    return this.send_message('event', name, parameters, callback);
+  },
+
+  onopen: function() {
+    this._handlers.open();
+  },
+
+  onmessage: function(event) {
+    var message = JSON.parse(event.data);
+    if (message.id && this.pending[message.id]) {
+      var callback = this.pending[message.id];
+      callback(undefined, message);
+    }
+    this._handlers.message(event.data);
+  },
+
+  onerror: function(err) {
+    this._handlers.error(err);
+  },
+
+  onclose: function() {
+    this._handlers.close();
   }
 };
 });

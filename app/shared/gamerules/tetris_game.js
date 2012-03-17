@@ -3,6 +3,7 @@ var _ = require('underscore')._;
 
 var utils = require('./utils');
 var Player = require('./player');
+var MessageSocket = require('./messagesocket');
 
 function Tetris(options) {
   _(this).extend(options);
@@ -26,30 +27,32 @@ module.exports = Tetris;
 Tetris.prototype = {
   on_client_connection: function(ws) {
     console.log("WS Connected");
-    ws.send("Hi from the game!");
   },
   on_client_message: function(data) {
-    console.log("WD Message:", data);
+    console.log("WS Message:", data);
+    var message = JSON.parse(data);
+    if (message.type === 'request') {
+      console.log("Received request");
+    }
   },
   on_client_close: function(ws) {
     console.log("WS Disconnected");
   },
   connect: function() {
     console.log("Opening websocket connection...");
-    var ws = new WebSocket('ws://localhost:4001');
-    ws.onopen = function() {
+    var ws = this.ws = new MessageSocket('ws://localhost:4001');
+    ws.on('open', function() {
       console.log("Connection established.");
-      ws.send('this is from the client');
-    };
-    ws.onmessage = function(event) {
+    });
+    ws.on('message', function(event) {
       console.log("Message from server:", event.data);
-    };
-    ws.onerror = function() {
+    });
+    ws.on('error', function() {
       console.log("WS error");
-    };
-    ws.onclose = function() {
+    });
+    ws.on('close', function() {
       console.log("WS close");
-    };
+    });
   },
   listen: function() {
 
@@ -65,6 +68,12 @@ Tetris.prototype = {
     this.clear_players();
   },
   start: function(player) {
+    if (this.client) {
+      this.ws.request('game.start', {}, function(err, result) {
+        console.log("RESULT OF game.start:", result);
+      });
+      return;
+    }
     if (this.game_over) this.reset();
     this.game_over = false;
     this.running = true;
