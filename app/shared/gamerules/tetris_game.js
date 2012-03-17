@@ -34,6 +34,12 @@ Tetris.prototype = {
     ws.onmessage = function(event) {
       console.log("Message from server:", event.data);
     };
+    ws.onerror = function() {
+      console.log("WS error");
+    };
+    ws.onclose = function() {
+      console.log("WS close");
+    };
   },
   listen: function() {
 
