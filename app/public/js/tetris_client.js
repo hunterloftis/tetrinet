@@ -2160,9 +2160,12 @@ TetrisClient.prototype = {
       name: this.name
     }));
   },
-  joined: function(params) {
+  setid: function(params) {
     this.id = params.id;
     console.log("My player ID is", this.id);
+  },
+  newplayer: function(params) {
+    console.log("New player joined game with ID:", params.id);
   }
 };
 });

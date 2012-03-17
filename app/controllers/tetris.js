@@ -17,11 +17,12 @@ module.exports = function(app) {
       });
 
       broadcast({
-        type: 'newplayer'
+        type: 'newplayer',
+        id: id
       });
       
       return send(undefined, {
-        type: 'joined',
+        type: 'setid',
         id: id
       });
     },
