@@ -7,7 +7,7 @@ var Block = require('./block');
 module.exports = Player;
 
 function Player(options) {
-  this.id = 'someuuid';
+  this.id = undefined;
   _.extend(this, options);
   this.board = new Board();
   this.game_over = false;

@@ -5,6 +5,7 @@ module.exports = TetrisClient;
 function TetrisClient() {
   this.name = 'Hunter';
   this.id = undefined;
+  this.player = undefined;
   this.game = new TetrisGame();
 }
 
@@ -38,8 +39,26 @@ TetrisClient.prototype = {
   setid: function(params) {
     this.id = params.id;
     console.log("My player ID is", this.id);
+    this.getplayer();
   },
   newplayer: function(params) {
     console.log("New player joined game with ID:", params.id);
+    this.game.add_player({
+      id: params.id,
+      name: params.name
+    });
+    this.getplayer();
+  },
+  getplayer: function() {
+    if (this.player) return;
+    if (typeof(this.id) === undefined) return;
+    var i = this.game.players.length;
+    while(i--) {
+      if (this.game.players[i].id === this.id) {
+        this.player = this.game.players[i];
+        if (this.onjoinedgame) this.onjoinedgame(this.player);
+        return;
+      }
+    }
   }
 };

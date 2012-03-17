@@ -1635,7 +1635,7 @@ var Block = require('./block');
 module.exports = Player;
 
 function Player(options) {
-  this.id = 'someuuid';
+  this.id = undefined;
   _.extend(this, options);
   this.board = new Board();
   this.game_over = false;
@@ -2032,6 +2032,7 @@ module.exports = Tetris;
 Tetris.prototype = {
   add_player: function(player_data) {
     var new_player = new Player({
+      id: player_data.id,
       name: player_data.name,
       game: this
     });

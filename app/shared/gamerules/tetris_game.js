@@ -16,6 +16,7 @@ module.exports = Tetris;
 Tetris.prototype = {
   add_player: function(player_data) {
     var new_player = new Player({
+      id: player_data.id,
       name: player_data.name,
       game: this
     });

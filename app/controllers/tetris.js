@@ -13,12 +13,14 @@ module.exports = function(app) {
     join: function(id, params, send, broadcast) {
       console.log("Tetris Controller: JOIN with params:", id, params);
       game.add_player({
+        id: id,
         name: params.name
       });
 
       broadcast({
         type: 'newplayer',
-        id: id
+        id: id,
+        name: params.name
       });
       
       return send(undefined, {

@@ -15,14 +15,14 @@ append scripts
     var client = new TetrisClient();
     var BoardVM;
 
-    client.connect('ws://localhost:4001', function(id) {
-      BoardVM = new Board({player:game.players[0]});
-    });
-
-    
+    client.onjoinedgame = function(player) {
+      console.log("JOINED GAME, creating BoardVM");
+      BoardVM = new Board({ player: player });
+      ko.applyBindings(BoardVM);
+    };
 
     $(function(){
-      //ko.applyBindings(BoardVM);
+      client.connect('ws://localhost:4001');
 
       var lastkeypress = 0;
       var ts = new Date().getTime();
