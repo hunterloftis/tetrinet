@@ -13,8 +13,13 @@ append scripts
 
     var TetrisClient = require('./tetris_client');
     var client = new TetrisClient();
-    client.connect('ws://localhost:4001');
-    //var BoardVM = new Board({player:game.players[0]});
+    var BoardVM;
+
+    client.connect('ws://localhost:4001', function(id) {
+      BoardVM = new Board({player:game.players[0]});
+    });
+
+    
 
     $(function(){
       //ko.applyBindings(BoardVM);

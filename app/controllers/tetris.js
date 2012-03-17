@@ -10,12 +10,17 @@ module.exports = function(app) {
       // Add new Player to TetrisGame
       console.log("Tetris Controller: Connection");
     },
-    join: function(id, params, callback) {
+    join: function(id, params, send, broadcast) {
       console.log("Tetris Controller: JOIN with params:", id, params);
       game.add_player({
         name: params.name
       });
-      return callback(undefined, {
+
+      broadcast({
+        type: 'newplayer'
+      });
+      
+      return send(undefined, {
         type: 'joined',
         id: id
       });
