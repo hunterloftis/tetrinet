@@ -936,7 +936,7 @@ button.active:hover,
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.70);
+  background: rgba(0,0,0,0.90);
   text-align: center;
   padding: 50px;
 }
@@ -956,7 +956,6 @@ button.active:hover,
   padding: 10px;
   margin: 20px;
   text-align: center;
-  background: rgba(255,255,255,0.50);
 }
 #score .current {
   font-size: 30px;
@@ -966,22 +965,13 @@ button.active:hover,
   font-style: italic;
 }
 #board {
-  border: 1px solid #999;
+  border: 1px solid #ccc;
+  border-bottom: 3px solid #111;
   width: 339px;
-  height: 618px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
-  margin: 30px auto;
+  height: 620px;
+  margin: 10px auto;
   position: relative;
-  -webkit-box-shadow: 0 0 25px -10px #000;
-  -moz-box-shadow: 0 0 25px -10px #000;
-  -ms-box-shadow: 0 0 25px -10px #000;
-  -o-box-shadow: 0 0 25px -10px #000;
-  box-shadow: 0 0 25px -10px #000;
-  background: rgba(255,255,255,0.50);
+  background: #fff;
 }
 #board #game_over {
   position: absolute;
@@ -1024,31 +1014,7 @@ button.active:hover,
 }
 #board #next_block div,
 #board .block.on {
-  position: relative;
-  border: 1px solid #555;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
-  background: #333;
-  -webkit-transform-style: preserve-3d;
-}
-#board #next_block div:after,
-#board .block.on:after {
-  pointer-events: none;
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
-  border-top: 1px solid rgba(255,255,255,0.80);
+  background: #d33682;
 }
 #board #next_block div.blank,
 #board .block.on.blank {
@@ -1061,29 +1027,33 @@ button.active:hover,
 }
 #board #next_block div.red,
 #board .block.on.red {
-  background: #811;
+  background: #dc322f;
 }
 #board #next_block div.green,
 #board .block.on.green {
-  background: #181;
+  background: #859900;
 }
 #board #next_block div.blue,
 #board .block.on.blue {
-  background: #118;
+  background: #268bd2;
 }
 #board #next_block div.purple,
 #board .block.on.purple {
-  background: #818;
+  background: #6c71c4;
 }
 #board #next_block div.orange,
 #board .block.on.orange {
-  background: #f28d28;
+  background: #cb4b16;
 }
 #board #next_block div.yellow,
 #board .block.on.yellow {
-  background: #f1f218;
+  background: #b58900;
 }
 #board #next_block div.black,
 #board .block.on.black {
+  background: #d33682;
+}
+#board #next_block div.dark,
+#board .block.on.dark {
   background: #333;
 }

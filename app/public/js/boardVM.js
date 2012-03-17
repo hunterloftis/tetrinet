@@ -157,6 +157,7 @@ Board.prototype = {
           this.player().game_over = true;
           this.game_over(true);
         }
+        rows[y][x].color('dark');
         rows[y][x].on(on);
       }
     }
