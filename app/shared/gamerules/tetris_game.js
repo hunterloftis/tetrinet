@@ -1,19 +1,43 @@
 var radio = require('radio');
+var _ = require('underscore')._;
 
 var utils = require('./utils');
 var Player = require('./player');
 
-function Tetris() {
+function Tetris(options) {
+  _(this).extend(options);
+
   this.players = [new Player({
     name: 'Test player',
     game: this
   })];
   this.reset();
+
+  if (this.client) {
+    this.connect();
+  }
+  else {
+    this.listen();
+  }
 }
 
 module.exports = Tetris;
 
 Tetris.prototype = {
+  connect: function() {
+    console.log("Opening websocket connection...");
+    var ws = new WebSocket('ws://localhost:4000');
+    ws.onopen = function() {
+      console.log("Connection established.");
+      ws.send('this is from the client');
+    };
+    ws.onmessage = function(event) {
+      console.log("Message from server:", event.data);
+    };
+  },
+  listen: function() {
+
+  },
   reset: function() {
     this.running = false;
     this.speed = 300;

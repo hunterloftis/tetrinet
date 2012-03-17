@@ -12,7 +12,9 @@ append scripts
   script
 
     var TetrisGame = require('./tetris_game');
-    var game = new TetrisGame();
+    var game = new TetrisGame({
+      client: true
+    });
     var BoardVM = new Board({player:game.players[0]});
 
     $(function(){

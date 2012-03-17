@@ -514,237 +514,6 @@ require.define("/node_modules/radio/radio.js", function (require, module, export
 
 });
 
-require.define("/utils.js", function (require, module, exports, __dirname, __filename) {
-function multi_array(dimensions, default_val) {
-  var arr = [], i;
-  if (dimensions.length === 1) {       // Sentinel - stop when we're at the innermost array
-    for (i = 0; i < dimensions[0]; i++) {
-      arr[i] = (typeof default_val == "function") ? default_val() : default_val ;
-    }
-  }
-  else {
-    for (i = 0; i < dimensions[0]; i++) {
-      arr[i] = multi_array(dimensions.slice(1), default_val);
-    }
-  }
-  return arr;
-}
-
-function clone_array(array) {
-  var clone = [];
-  for (var y = 0; y < array.length; y++) {
-    clone[y] = [];
-    for (var x = 0; x < array[y].length; x++) {
-      clone[y][x] = array[y][x];
-    }
-  }
-  return clone;
-}
-
-function overlay_array(dest, src, off_y, off_x, mask) {
-  var height = src.length;
-  var width = src[0].length;
-  for (var y = 0; y < height; y++) {
-    for (var x = 0; x < width; x++) {
-      if (src[y][x] !== mask) dest[y + off_y][x + off_x] = src[y][x];
-    }
-  }
-}
-
-function multi_array_from_strings(string_array) {
-  var rows = [];
-  for (var y = 0; y < string_array.length; y++) {
-    var row = string_array[y];
-    rows[y] = [];
-    for (var x = 0; x < row.length; x++) {
-      var val = row.substr(x, 1);
-      rows[y].push(val);
-    }
-  }
-  return rows;
-}
-
-function rotate_array(array, counter) {
-  var height = array.length;
-  var width = array[0].length;
-  var rotated = multi_array([width, height], 'x'); // Inverted from (height, width)
-  for (var y = 0; y < height; y++) {
-    for (var x = 0; x < width; x++) {
-      var target_x = counter ? height - y - 1 : y;
-      var target_y = counter ? x : width - x - 1;
-      rotated[target_y][target_x] = array[y][x];
-    }
-  }
-  return rotated;
-}
-
-function render_array(rows) {
-  for (var y = 0; y < rows.length; y++) {
-    var row = rows[y];
-    var line = '';
-    for (var x = 0; x < row.length; x++) {
-      line += row[x];
-    }
-    console.log(line);
-  }
-}
-
-function find_coords(array, target) {
-  for (var y = 0; y < array.length; y++) {
-    for (var x = 0; x < array[y].length; x++) {
-      if (array[y][x] === target) return {x: x, y: y};
-    }
-  }
-  return undefined;
-}
-
-function get_dimensions(array) {
-  return {
-    height: array.length,
-    width: array[0].length
-  };
-}
-
-module.exports = {
-  multi_array: multi_array,
-  multi_array_from_strings: multi_array_from_strings,
-  rotate_array: rotate_array,
-  render_array: render_array,
-  clone_array: clone_array,
-  overlay_array: overlay_array,
-  find_coords: find_coords,
-  get_dimensions: get_dimensions
-};
-
-});
-
-require.define("/player.js", function (require, module, exports, __dirname, __filename) {
-var _ = require('underscore')._;
-var radio = require('radio');
-
-var Board = require('./board');
-var Block = require('./block');
-
-module.exports = Player;
-
-function Player(options) {
-  this.id = 'someuuid';
-  _.extend(this, options);
-  this.board = new Board();
-  this.game_over = false;
-  this.score = 0;
-  this.next_block = Math.floor(Math.random()*7);
-}
-
-
-Player.prototype = {
-  start: function() {
-    this.game.start(this);
-  },
-  stop: function() {
-    this.game.stop(this);
-  },
-  toggle: function() {
-    this.game.toggle(this);
-  },
-  tick: function() {
-    this.shift_down();
-    if (typeof(this.board.block) === 'undefined') {
-      this.add_next(this.board);
-    }
-  },
-  clear: function() {
-    this.board.empty();
-    this.update_score(0);
-    this.select_next();
-    this.game_over = false;
-  },
-  add_block: function(type, row, column) {
-    if (typeof(this.board.block) === 'undefined') {
-      var new_block = new Block(type, {
-        y: row,
-        x: column
-      });
-      this.board.block = new_block;
-      return true;
-    }
-    return false;
-  },
-  select_next: function() {
-    this.next_block = Math.floor(Math.random()*7);
-    radio('player.next_block').broadcast(this);
-  },
-  add_next: function(board) {
-    this.add_block(this.next_block, 0, 5);
-    this.select_next();
-  },
-  shift_down: function() {
-    if (this.shift(1,0)) {
-      return true;
-    }
-    else {
-      this.board.apply_block();
-      var cleared = this.board.check_rows();
-      if (cleared > 0) {
-        radio('player.line_cleared').broadcast(this);
-        this.update_score(this.score + cleared * cleared);
-      }
-      return false;
-    }
-  },
-  update_score: function(target) {
-    this.score = target;
-    radio('player.score_updated').broadcast(this);
-  },
-  shift: function(dy, dx) {
-    if (this.board.block) {
-      if (this.board.block.fits(this.board.rows, this.board.block.y + dy, this.board.block.x + dx)) {
-        this.board.block.x += dx;
-        this.board.block.y += dy;
-        return true;
-      }
-      else return false;
-    }
-  },
-  shift_left: function() {
-    return this.shift(0, -1);
-  },
-  shift_right: function() {
-    return this.shift(0, 1);
-  },
-  rotate_left: function() {
-    if (this.board.block) return this.board.block.rotate(this.board.rows, true);
-  },
-  rotate_right: function() {
-    if (this.board.block) return this.board.block.rotate(this.board.rows, false);
-  },
-  drop: function() {
-    if (this.board.block) {
-      var result = this.board.block.drop(this.board.rows);
-      radio('player.drop').broadcast(this);
-      this.board.apply_block();
-      return result;
-    }
-  },
-  create_game: function(user_id) {
-    // End any games the user is currently running
-    // Does the user have permission to create a game?
-  },
-  join_game: function(user_id, game_id) {
-    // Leave any other games the user_id is in
-    // Does user_id have permission to join this game?
-    // Does the game have a space available?
-  },
-  end_game: function(user_id, game_id) {
-    // Does the user_id have permissin to end this game?
-  },
-  use_special: function(user_id, player_id) {
-    // Find the next special in the user's queueu
-    // Is player_id in the same game?
-  }
-};
-});
-
 require.define("/node_modules/underscore/package.json", function (require, module, exports, __dirname, __filename) {
 module.exports = {"main":"underscore.js"}
 });
@@ -1752,6 +1521,237 @@ require.define("/node_modules/underscore/underscore.js", function (require, modu
 
 });
 
+require.define("/utils.js", function (require, module, exports, __dirname, __filename) {
+function multi_array(dimensions, default_val) {
+  var arr = [], i;
+  if (dimensions.length === 1) {       // Sentinel - stop when we're at the innermost array
+    for (i = 0; i < dimensions[0]; i++) {
+      arr[i] = (typeof default_val == "function") ? default_val() : default_val ;
+    }
+  }
+  else {
+    for (i = 0; i < dimensions[0]; i++) {
+      arr[i] = multi_array(dimensions.slice(1), default_val);
+    }
+  }
+  return arr;
+}
+
+function clone_array(array) {
+  var clone = [];
+  for (var y = 0; y < array.length; y++) {
+    clone[y] = [];
+    for (var x = 0; x < array[y].length; x++) {
+      clone[y][x] = array[y][x];
+    }
+  }
+  return clone;
+}
+
+function overlay_array(dest, src, off_y, off_x, mask) {
+  var height = src.length;
+  var width = src[0].length;
+  for (var y = 0; y < height; y++) {
+    for (var x = 0; x < width; x++) {
+      if (src[y][x] !== mask) dest[y + off_y][x + off_x] = src[y][x];
+    }
+  }
+}
+
+function multi_array_from_strings(string_array) {
+  var rows = [];
+  for (var y = 0; y < string_array.length; y++) {
+    var row = string_array[y];
+    rows[y] = [];
+    for (var x = 0; x < row.length; x++) {
+      var val = row.substr(x, 1);
+      rows[y].push(val);
+    }
+  }
+  return rows;
+}
+
+function rotate_array(array, counter) {
+  var height = array.length;
+  var width = array[0].length;
+  var rotated = multi_array([width, height], 'x'); // Inverted from (height, width)
+  for (var y = 0; y < height; y++) {
+    for (var x = 0; x < width; x++) {
+      var target_x = counter ? height - y - 1 : y;
+      var target_y = counter ? x : width - x - 1;
+      rotated[target_y][target_x] = array[y][x];
+    }
+  }
+  return rotated;
+}
+
+function render_array(rows) {
+  for (var y = 0; y < rows.length; y++) {
+    var row = rows[y];
+    var line = '';
+    for (var x = 0; x < row.length; x++) {
+      line += row[x];
+    }
+    console.log(line);
+  }
+}
+
+function find_coords(array, target) {
+  for (var y = 0; y < array.length; y++) {
+    for (var x = 0; x < array[y].length; x++) {
+      if (array[y][x] === target) return {x: x, y: y};
+    }
+  }
+  return undefined;
+}
+
+function get_dimensions(array) {
+  return {
+    height: array.length,
+    width: array[0].length
+  };
+}
+
+module.exports = {
+  multi_array: multi_array,
+  multi_array_from_strings: multi_array_from_strings,
+  rotate_array: rotate_array,
+  render_array: render_array,
+  clone_array: clone_array,
+  overlay_array: overlay_array,
+  find_coords: find_coords,
+  get_dimensions: get_dimensions
+};
+
+});
+
+require.define("/player.js", function (require, module, exports, __dirname, __filename) {
+var _ = require('underscore')._;
+var radio = require('radio');
+
+var Board = require('./board');
+var Block = require('./block');
+
+module.exports = Player;
+
+function Player(options) {
+  this.id = 'someuuid';
+  _.extend(this, options);
+  this.board = new Board();
+  this.game_over = false;
+  this.score = 0;
+  this.next_block = Math.floor(Math.random()*7);
+}
+
+
+Player.prototype = {
+  start: function() {
+    this.game.start(this);
+  },
+  stop: function() {
+    this.game.stop(this);
+  },
+  toggle: function() {
+    this.game.toggle(this);
+  },
+  tick: function() {
+    this.shift_down();
+    if (typeof(this.board.block) === 'undefined') {
+      this.add_next(this.board);
+    }
+  },
+  clear: function() {
+    this.board.empty();
+    this.update_score(0);
+    this.select_next();
+    this.game_over = false;
+  },
+  add_block: function(type, row, column) {
+    if (typeof(this.board.block) === 'undefined') {
+      var new_block = new Block(type, {
+        y: row,
+        x: column
+      });
+      this.board.block = new_block;
+      return true;
+    }
+    return false;
+  },
+  select_next: function() {
+    this.next_block = Math.floor(Math.random()*7);
+    radio('player.next_block').broadcast(this);
+  },
+  add_next: function(board) {
+    this.add_block(this.next_block, 0, 5);
+    this.select_next();
+  },
+  shift_down: function() {
+    if (this.shift(1,0)) {
+      return true;
+    }
+    else {
+      this.board.apply_block();
+      var cleared = this.board.check_rows();
+      if (cleared > 0) {
+        radio('player.line_cleared').broadcast(this);
+        this.update_score(this.score + cleared * cleared);
+      }
+      return false;
+    }
+  },
+  update_score: function(target) {
+    this.score = target;
+    radio('player.score_updated').broadcast(this);
+  },
+  shift: function(dy, dx) {
+    if (this.board.block) {
+      if (this.board.block.fits(this.board.rows, this.board.block.y + dy, this.board.block.x + dx)) {
+        this.board.block.x += dx;
+        this.board.block.y += dy;
+        return true;
+      }
+      else return false;
+    }
+  },
+  shift_left: function() {
+    return this.shift(0, -1);
+  },
+  shift_right: function() {
+    return this.shift(0, 1);
+  },
+  rotate_left: function() {
+    if (this.board.block) return this.board.block.rotate(this.board.rows, true);
+  },
+  rotate_right: function() {
+    if (this.board.block) return this.board.block.rotate(this.board.rows, false);
+  },
+  drop: function() {
+    if (this.board.block) {
+      var result = this.board.block.drop(this.board.rows);
+      radio('player.drop').broadcast(this);
+      this.board.apply_block();
+      return result;
+    }
+  },
+  create_game: function(user_id) {
+    // End any games the user is currently running
+    // Does the user have permission to create a game?
+  },
+  join_game: function(user_id, game_id) {
+    // Leave any other games the user_id is in
+    // Does user_id have permission to join this game?
+    // Does the game have a space available?
+  },
+  end_game: function(user_id, game_id) {
+    // Does the user_id have permissin to end this game?
+  },
+  use_special: function(user_id, player_id) {
+    // Find the next special in the user's queueu
+    // Is player_id in the same game?
+  }
+};
+});
+
 require.define("/board.js", function (require, module, exports, __dirname, __filename) {
 var utils = require('./utils');
 var Block = require('./block');
@@ -2015,21 +2015,45 @@ Block.prototype = {
 
 require.define("/tetris_game.js", function (require, module, exports, __dirname, __filename) {
     var radio = require('radio');
+var _ = require('underscore')._;
 
 var utils = require('./utils');
 var Player = require('./player');
 
-function Tetris() {
+function Tetris(options) {
+  _(this).extend(options);
+
   this.players = [new Player({
     name: 'Test player',
     game: this
   })];
   this.reset();
+
+  if (this.client) {
+    this.connect();
+  }
+  else {
+    this.listen();
+  }
 }
 
 module.exports = Tetris;
 
 Tetris.prototype = {
+  connect: function() {
+    console.log("Opening websocket connection...");
+    var ws = new WebSocket('ws://localhost:4000');
+    ws.onopen = function() {
+      console.log("Connection established.");
+      ws.send('this is from the client');
+    };
+    ws.onmessage = function(event) {
+      console.log("Message from server:", event.data);
+    };
+  },
+  listen: function() {
+
+  },
   reset: function() {
     this.running = false;
     this.speed = 300;
