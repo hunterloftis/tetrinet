@@ -1,6 +1,6 @@
 #!/bin/bash
 
 echo "Building shared JS..."
-node_modules/browserify/bin/cli.js app/shared/gamerules/index.js -o app/public/js/gamerules.js
+node_modules/browserify/bin/cli.js app/shared/gamerules/tetris_client.js -o app/public/js/tetris_client.js
 node_modules/browserify/bin/cli.js app/shared/gamerules/tetris_game.js -o app/public/js/tetris_game.js
 echo "built."

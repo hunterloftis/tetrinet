@@ -13,7 +13,10 @@ module.exports = function(app) {
 
     ws.on('message', function(data, flags) {
       var message = JSON.parse(data);
-      app.controllers.tetris[message.type](id, message);
+      app.controllers.tetris[message.type](id, message, function(err, response) {
+        console.log("Responding with:", response);
+        ws.send(JSON.stringify(response));
+      });
     });
 
     ws.on('close', function() {

@@ -9,44 +9,11 @@ function Tetris(options) {
 
   this.players = [];
   this.reset();
-
-  if (this.client) {
-    this.connect();
-  }
-  else {
-    this.listen();
-  }
 }
 
 module.exports = Tetris;
 
 Tetris.prototype = {
-
-  connect: function() {
-    console.log("Opening websocket connection...");
-    var ws = this.ws = new WebSocket('ws://localhost:4001');
-    ws.onopen = function() {
-      console.log("Connection established.");
-      ws.send(JSON.stringify({
-        type: 'join',
-        name: 'Hunter'
-      }));
-    };
-    ws.onmessage = function(event) {
-      console.log("Message from server:", event.data);
-    };
-    ws.onerror = function() {
-      console.log("WS error");
-    };
-    ws.onclose = function() {
-      console.log("WS close");
-    };
-  },
-  listen: function() {
-
-  },
-
-  // Both
   add_player: function(player_data) {
     var new_player = new Player({
       name: player_data.name,
