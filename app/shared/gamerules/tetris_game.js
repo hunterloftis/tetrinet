@@ -24,9 +24,19 @@ function Tetris(options) {
 module.exports = Tetris;
 
 Tetris.prototype = {
+  on_client_connection: function(ws) {
+    console.log("WS Connected");
+    ws.send("Hi from the game!");
+  },
+  on_client_message: function(data) {
+    console.log("WD Message:", data);
+  },
+  on_client_close: function(ws) {
+    console.log("WS Disconnected");
+  },
   connect: function() {
     console.log("Opening websocket connection...");
-    var ws = new WebSocket('ws://localhost:4000');
+    var ws = new WebSocket('ws://localhost:4001');
     ws.onopen = function() {
       console.log("Connection established.");
       ws.send('this is from the client');
