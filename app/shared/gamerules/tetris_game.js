@@ -3,15 +3,11 @@ var _ = require('underscore')._;
 
 var utils = require('./utils');
 var Player = require('./player');
-var MessageSocket = require('./messagesocket');
 
 function Tetris(options) {
   _(this).extend(options);
 
-  this.players = [new Player({
-    name: 'Test player',
-    game: this
-  })];
+  this.players = [];
   this.reset();
 
   if (this.client) {
@@ -25,37 +21,38 @@ function Tetris(options) {
 module.exports = Tetris;
 
 Tetris.prototype = {
-  on_client_connection: function(ws) {
-    console.log("WS Connected");
-  },
-  on_client_message: function(data) {
-    console.log("WS Message:", data);
-    var message = JSON.parse(data);
-    if (message.type === 'request') {
-      console.log("Received request");
-    }
-  },
-  on_client_close: function(ws) {
-    console.log("WS Disconnected");
-  },
+
   connect: function() {
     console.log("Opening websocket connection...");
-    var ws = this.ws = new MessageSocket('ws://localhost:4001');
-    ws.on('open', function() {
+    var ws = this.ws = new WebSocket('ws://localhost:4001');
+    ws.onopen = function() {
       console.log("Connection established.");
-    });
-    ws.on('message', function(event) {
+      ws.send(JSON.stringify({
+        type: 'join',
+        name: 'Hunter'
+      }));
+    };
+    ws.onmessage = function(event) {
       console.log("Message from server:", event.data);
-    });
-    ws.on('error', function() {
+    };
+    ws.onerror = function() {
       console.log("WS error");
-    });
-    ws.on('close', function() {
+    };
+    ws.onclose = function() {
       console.log("WS close");
-    });
+    };
   },
   listen: function() {
 
+  },
+
+  // Both
+  add_player: function(player_data) {
+    var new_player = new Player({
+      name: player_data.name,
+      game: this
+    });
+    this.players.push(new_player);
   },
   reset: function() {
     this.running = false;
@@ -69,9 +66,7 @@ Tetris.prototype = {
   },
   start: function(player) {
     if (this.client) {
-      this.ws.request('game.start', {}, function(err, result) {
-        console.log("RESULT OF game.start:", result);
-      });
+      this.ws.send('game.start');
       return;
     }
     if (this.game_over) this.reset();

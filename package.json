@@ -18,7 +18,8 @@
         "redis": "latest",
         "underscore":"latest",
         "radio":"latest",
-        "ws":"latest"
+        "ws":"latest",
+        "node-uuid":"latest"
     },
     "devDependencies": {
         "vows": "latest",

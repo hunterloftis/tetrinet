@@ -1,4 +1,5 @@
 var WebSocketServer = require('ws').Server;
+var uuid = require('node-uuid');
 
 module.exports = function(app) {
 
@@ -6,15 +7,19 @@ module.exports = function(app) {
   var wss = new WebSocketServer({ port: 4001 });
 
   wss.on('connection', function(ws) {
-    app.game.on_client_connection(ws);
+    var id = ws.id = uuid.v4();
+
+    app.controllers.tetris.connection(id);
 
     ws.on('message', function(data, flags) {
-      app.game.on_client_message(data);
+      var message = JSON.parse(data);
+      app.controllers.tetris[message.type](id, message);
     });
-  });
 
-  wss.on('close', function(ws) {
-    app.game.on_client_close(ws);
+    ws.on('close', function() {
+      app.controllers.tetris.close(id);
+    });
+
   });
 
   wss.on('error', function(e) {

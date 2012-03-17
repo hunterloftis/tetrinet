@@ -2013,98 +2013,17 @@ Block.prototype = {
 };
 });
 
-require.define("/messagesocket.js", function (require, module, exports, __dirname, __filename) {
-var _ = require('underscore')._;
-
-module.exports = MessageSocket;
-
-function MessageSocket(uri) {
-  _(this).bindAll();
-
-  this.pending = {};
-  this.ws = new WebSocket(uri);
-  this.ws.onopen = this.onopen;
-  this.ws.onmessage = this.onmessage;
-  this.ws.onerror = this.onerror;
-  this.ws.onclose = this.onclose;
-
-  var noop = function() {};
-  this._handlers = {
-    'open': noop,
-    'message': noop,
-    'error': noop,
-    'close': noop
-  };
-}
-
-MessageSocket.prototype = {
-
-  on: function(event, handler) {
-    this._handlers[event] = handler;
-  },
-
-  enqueue: function(id, callback) {
-    this.pending[id] = callback;
-  },
-
-  send_message: function(type, name, parameters, callback) {
-    var id = Math.floor(Math.random() * 9999999);
-    var data = JSON.stringify({
-      id: id,
-      type: type,
-      name: name,
-      parameters: parameters
-    });
-    this.enqueue(data.id, callback);
-    this.ws.send(data);
-  },
-
-  request: function(name, parameters, callback) {
-    return this.send_message('request', name, parameters, callback);
-  },
-
-  event: function(name, parameters, callback) {
-    return this.send_message('event', name, parameters, callback);
-  },
-
-  onopen: function() {
-    this._handlers.open();
-  },
-
-  onmessage: function(event) {
-    var message = JSON.parse(event.data);
-    if (message.id && this.pending[message.id]) {
-      var callback = this.pending[message.id];
-      callback(undefined, message);
-    }
-    this._handlers.message(event.data);
-  },
-
-  onerror: function(err) {
-    this._handlers.error(err);
-  },
-
-  onclose: function() {
-    this._handlers.close();
-  }
-};
-});
-
 require.define("/tetris_game.js", function (require, module, exports, __dirname, __filename) {
     var radio = require('radio');
 var _ = require('underscore')._;
 
 var utils = require('./utils');
 var Player = require('./player');
-var MessageSocket = require('./messagesocket');
 
 function Tetris(options) {
   _(this).extend(options);
 
-  this.players = [new Player({
-    name: 'Test player',
-    game: this
-  })];
+  this.players = [];
   this.reset();
 
   if (this.client) {
@@ -2118,37 +2037,38 @@ function Tetris(options) {
 module.exports = Tetris;
 
 Tetris.prototype = {
-  on_client_connection: function(ws) {
-    console.log("WS Connected");
-  },
-  on_client_message: function(data) {
-    console.log("WS Message:", data);
-    var message = JSON.parse(data);
-    if (message.type === 'request') {
-      console.log("Received request");
-    }
-  },
-  on_client_close: function(ws) {
-    console.log("WS Disconnected");
-  },
+
   connect: function() {
     console.log("Opening websocket connection...");
-    var ws = this.ws = new MessageSocket('ws://localhost:4001');
-    ws.on('open', function() {
+    var ws = this.ws = new WebSocket('ws://localhost:4001');
+    ws.onopen = function() {
       console.log("Connection established.");
-    });
-    ws.on('message', function(event) {
+      ws.send(JSON.stringify({
+        type: 'join',
+        name: 'Hunter'
+      }));
+    };
+    ws.onmessage = function(event) {
       console.log("Message from server:", event.data);
-    });
-    ws.on('error', function() {
+    };
+    ws.onerror = function() {
       console.log("WS error");
-    });
-    ws.on('close', function() {
+    };
+    ws.onclose = function() {
       console.log("WS close");
-    });
+    };
   },
   listen: function() {
 
+  },
+
+  // Both
+  add_player: function(player_data) {
+    var new_player = new Player({
+      name: player_data.name,
+      game: this
+    });
+    this.players.push(new_player);
   },
   reset: function() {
     this.running = false;
@@ -2162,9 +2082,7 @@ Tetris.prototype = {
   },
   start: function(player) {
     if (this.client) {
-      this.ws.request('game.start', {}, function(err, result) {
-        console.log("RESULT OF game.start:", result);
-      });
+      this.ws.send('game.start');
       return;
     }
     if (this.game_over) this.reset();
