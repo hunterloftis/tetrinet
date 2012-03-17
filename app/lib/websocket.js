@@ -9,8 +9,8 @@ module.exports = function(app) {
     console.log("Got connection");
     ws.on('message', function(data, flags) {
       console.log("Received from client:", data);
+      ws.send("Message from the server.");
     });
-    ws.send("Message from the server.");
   });
 
   wss.on('close', function() {
