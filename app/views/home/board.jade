@@ -34,23 +34,23 @@ append scripts
               break;
             // space
             case 32:
-              BoardVM.drop();
+              if (BoardVM.started()) BoardVM.drop();
               break;
             // left
             case 37:
-              BoardVM.left();
+              if (BoardVM.started()) BoardVM.left();
               break;
             //right
             case 39:
-              BoardVM.right();
+              if (BoardVM.started()) BoardVM.right();
               break;
             // down
             case 40:
-              BoardVM.down();
+              if (BoardVM.started()) BoardVM.down();
               break;
             // up
             case 38:
-              BoardVM.rotate();
+              if (BoardVM.started()) BoardVM.rotate();
               break;
           }
 
