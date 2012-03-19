@@ -18,6 +18,8 @@ append scripts
     $(function(){
       ko.applyBindings(BoardVM);
 
+      resizeBoard();
+
       var lastkeypress = 0;
       var ts = new Date().getTime();
       var timesince = ts - lastkeypress;
@@ -58,7 +60,12 @@ append scripts
         lastkeypress = ts;
       });
     })
-
+  
+    function resizeBoard() {
+      var size = Math.floor($(window).height()/25);
+      $("#board .block").width(size+"px").height(size+"px");
+      $("#board").width(size*12+2+"px");
+    }
 
 block content
   #overlay(data-bind="visible:(!started())")
@@ -69,11 +76,12 @@ block content
       span(data-bind="html:score")
     p.high HIGH SCORE: 
       span(data-bind="html:high_score")
+  #next_block(data-bind="html:next_block")
+  #game_over(data-bind="visible:game_over") 
+    h2 GAME OVER
   #board(data-bind="foreach:rows")
-    #next_block(data-bind="html:$parent.next_block")
-    #game_over(data-bind="visible:$parent.game_over") 
-      h2 GAME OVER
     // ko foreach:$data
     .block(data-bind="css:{on:on, red:(color() == 'red'), blue:(color() == 'blue'), green:(color() == 'green'), purple:(color() == 'purple'), orange:(color() == 'orange'), yellow:(color() == 'yellow'), dark:(color() == 'dark')}")
     // /ko
+    .clear
 

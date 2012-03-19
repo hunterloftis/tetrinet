@@ -19,6 +19,7 @@ orange = #cb4b16
 yellow = #b58900
 black = #d33682
 
+
 #overlay
   position absolute
   z-index 998
@@ -29,9 +30,9 @@ black = #d33682
   background rgba(0,0,0,0.9)
   text-align center
   padding 50px
+  //display none
   button
     font-size 35px
-
     span
       display block
       font-size 12px
@@ -52,68 +53,74 @@ black = #d33682
     font-style italic
 
 
+#game_over
+  position absolute
+  top 35%
+  left 10%
+  right 10%
+  color #eee
+  font-size 30px
+  text-align center
+  border-radius 3px
+  padding 20px 0
+  z-index 999
+
+
+#next_block
+  position absolute
+  top 20
+  right 20%
+  width 125px
+  margin-left 20px
+  div
+    inline-block()
+
+#next_block div, .block
+  width 26px
+  height 26px
+  margin 0px
+  border 1px solid #fff
+
+#next_block div, .block.on
+  //emboss(3px)
+  //border 1px solid #555
+  //border-radius 3px
+  background black
+  //animation pop 100ms ease-out
+  &.blank
+    background none
+    border none
+    &:after
+      display none
+  &.red
+    background red
+  &.green
+    background green
+  &.blue
+    background blue
+  &.purple
+    background purple
+  &.orange
+    background orange
+  &.yellow
+    background yellow
+  &.black
+    background black
+  &.dark
+    background #333
+
+
+
 #board
   border 1px solid #ccc
   border-bottom 3px solid #111
-  width 339px
-  height 620px
+  //width 339px
+  //height 620px
   margin 10px auto
   position relative
   background #FFF
 
-  #game_over
-    position absolute
-    top 35%
-    left 10%
-    right 10%
-    color #eee
-    font-size 30px
-    text-align center
-    border-radius 3px
-    padding 20px 0
-    z-index 999
-
-  #next_block
-    position absolute
-    top 0
-    left 100%
-    width 125px
-    margin-left 20px
-    div
-      inline-block()
-
   .block
-    float left      
+    float left
 
-  #next_block div, .block
-    width 26px
-    height 26px
-    margin 1px
 
-  #next_block div, .block.on
-    //emboss(3px)
-    //border 1px solid #555
-    //border-radius 3px
-    background black
-    //animation pop 100ms ease-out
-    &.blank
-      background none
-      border none
-      &:after
-        display none
-    &.red
-      background red
-    &.green
-      background green
-    &.blue
-      background blue
-    &.purple
-      background purple
-    &.orange
-      background orange
-    &.yellow
-      background yellow
-    &.black
-      background black
-    &.dark
-      background #333
