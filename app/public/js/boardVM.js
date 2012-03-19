@@ -5,6 +5,8 @@ var BlockClass = require('./block');
 var block_types = new BlockClass();
 block_types = block_types.templates;
 
+this.next_templates = {};
+
 /**
  * individual blocks in grid
  */ 
@@ -84,14 +86,6 @@ function Board(options) {
 }
 
 Board.prototype = {
-  clear_board: function() {
-    var rows = this.rows();
-    for(var r = 0; r < this.width(); r++) {
-      for(var c = 0; c < this.height(); c++) {
-        rows[c][r].on(false);
-      }
-    }
-  },
   start: function() {
     this.player().start();
   },
@@ -100,23 +94,37 @@ Board.prototype = {
   },
   set_next_block: function() {
     
-    var block_output = '';
-    var rows = block_types[this.player().next_block][0];
-    for (var y = 0; y < rows.length; y++) {
-      var row = rows[y];
-      var line = '';
-      for (var x = 0; x < row.length; x++) {
-        if (row[x] != ' ') {
-          block_output += '<div class="'+available_colors[this.player().next_block]+'"></div>';
-        }
-        else {
-          block_output += '<div class="blank"></div>';
-        }
-      }
-      block_output += '<br>';
+    var type = this.player().next_block;
+
+    // check cache for block
+    if (next_templates[type]) {
+      this.next_block(next_templates[type]);
     }
 
-    this.next_block(block_output);
+    // no cache, generate block code
+    else {
+
+      var block_output = '';
+      var rows = block_types[type][0];
+      for (var y = 0; y < rows.length; y++) {
+        var row = rows[y];
+        var line = '';
+        for (var x = 0; x < row.length; x++) {
+          if (row[x] != ' ') {
+            block_output += '<div class="block '+available_colors[this.player().next_block]+'"></div>';
+          }
+          else {
+            block_output += '<div class="blank block"></div>';
+          }
+        }
+        block_output += '<br>';
+      }
+
+      this.next_block(block_output);
+
+      // save rendered block to cache
+      next_templates[type] = block_output;
+    }
   },
   down: function() {
     this.player().shift_down();
@@ -176,5 +184,6 @@ Board.prototype = {
         }
       }
     }
+
   }
 };

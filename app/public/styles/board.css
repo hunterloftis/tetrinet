@@ -929,6 +929,14 @@ button.active:hover,
 .button.active:hover {
   color: #ff0;
 }
+.clear {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
 #overlay {
   position: absolute;
   z-index: 998;
@@ -964,16 +972,7 @@ button.active:hover,
   font-size: 14px;
   font-style: italic;
 }
-#board {
-  border: 1px solid #ccc;
-  border-bottom: 3px solid #111;
-  width: 339px;
-  height: 620px;
-  margin: 10px auto;
-  position: relative;
-  background: #fff;
-}
-#board #game_over {
+#game_over {
   position: absolute;
   top: 35%;
   left: 10%;
@@ -989,71 +988,79 @@ button.active:hover,
   padding: 20px 0;
   z-index: 999;
 }
-#board #next_block {
+#next_block {
   position: absolute;
-  top: 0;
-  left: 100%;
+  top: 20;
+  right: 20%;
   width: 125px;
   margin-left: 20px;
 }
-#board #next_block div {
+#next_block div {
   display: inline-block;
   zoom: 1;
   *display: inline;
   vertical-align: bottom;
   bottom: 0;
 }
-#board .block {
-  float: left;
-}
-#board #next_block div,
-#board .block {
+#next_block div,
+.block {
   width: 26px;
   height: 26px;
-  margin: 1px;
+  margin: 0px;
+  border: 1px solid #fff;
 }
-#board #next_block div,
-#board .block.on {
+#next_block div,
+.block.on {
   background: #d33682;
 }
-#board #next_block div.blank,
-#board .block.on.blank {
+#next_block div.blank,
+.block.on.blank {
   background: none;
   border: none;
 }
-#board #next_block div.blank:after,
-#board .block.on.blank:after {
+#next_block div.blank:after,
+.block.on.blank:after {
   display: none;
 }
-#board #next_block div.red,
-#board .block.on.red {
+#next_block div.red,
+.block.on.red {
   background: #dc322f;
 }
-#board #next_block div.green,
-#board .block.on.green {
+#next_block div.green,
+.block.on.green {
   background: #859900;
 }
-#board #next_block div.blue,
-#board .block.on.blue {
+#next_block div.blue,
+.block.on.blue {
   background: #268bd2;
 }
-#board #next_block div.purple,
-#board .block.on.purple {
+#next_block div.purple,
+.block.on.purple {
   background: #6c71c4;
 }
-#board #next_block div.orange,
-#board .block.on.orange {
+#next_block div.orange,
+.block.on.orange {
   background: #cb4b16;
 }
-#board #next_block div.yellow,
-#board .block.on.yellow {
+#next_block div.yellow,
+.block.on.yellow {
   background: #b58900;
 }
-#board #next_block div.black,
-#board .block.on.black {
+#next_block div.black,
+.block.on.black {
   background: #d33682;
 }
-#board #next_block div.dark,
-#board .block.on.dark {
+#next_block div.dark,
+.block.on.dark {
   background: #333;
+}
+#board {
+  border: 1px solid #ccc;
+  border-bottom: 3px solid #111;
+  margin: 10px auto;
+  position: relative;
+  background: #fff;
+}
+#board .block {
+  float: left;
 }

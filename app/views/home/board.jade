@@ -24,6 +24,8 @@ append scripts
     $(function(){
       client.connect('ws://localhost:4001');
 
+      resizeBoard();
+
       var lastkeypress = 0;
       var ts = new Date().getTime();
       var timesince = ts - lastkeypress;
@@ -40,23 +42,23 @@ append scripts
               break;
             // space
             case 32:
-              BoardVM.drop();
+              if (BoardVM.started()) BoardVM.drop();
               break;
             // left
             case 37:
-              BoardVM.left();
+              if (BoardVM.started()) BoardVM.left();
               break;
             //right
             case 39:
-              BoardVM.right();
+              if (BoardVM.started()) BoardVM.right();
               break;
             // down
             case 40:
-              BoardVM.down();
+              if (BoardVM.started()) BoardVM.down();
               break;
             // up
             case 38:
-              BoardVM.rotate();
+              if (BoardVM.started()) BoardVM.rotate();
               break;
           }
 
@@ -64,7 +66,12 @@ append scripts
         lastkeypress = ts;
       });
     })
-
+  
+    function resizeBoard() {
+      var size = Math.floor($(window).height()/25);
+      $(".block").width(size+"px").height(size+"px");
+      $("#board").width(size*12+2+"px");
+    }
 
 block content
   #overlay(data-bind="visible:(!started())")
@@ -75,11 +82,12 @@ block content
       span(data-bind="html:score")
     p.high HIGH SCORE: 
       span(data-bind="html:high_score")
+  #next_block(data-bind="html:next_block")
+  #game_over(data-bind="visible:game_over") 
+    h2 GAME OVER
   #board(data-bind="foreach:rows")
-    #next_block(data-bind="html:$parent.next_block")
-    #game_over(data-bind="visible:$parent.game_over") 
-      h2 GAME OVER
     // ko foreach:$data
     .block(data-bind="css:{on:on, red:(color() == 'red'), blue:(color() == 'blue'), green:(color() == 'green'), purple:(color() == 'purple'), orange:(color() == 'orange'), yellow:(color() == 'yellow'), dark:(color() == 'dark')}")
     // /ko
+    .clear
 
